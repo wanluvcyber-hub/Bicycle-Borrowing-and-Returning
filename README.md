@@ -32,7 +32,7 @@ flutter run --dart-define-from-file=env.json
 - VS Code: กด F5 ได้เลย (มี `.vscode/launch.json` โหลด `env.json` ให้)
 - Android Studio: Run → Edit Configurations → Additional run args ใส่ `--dart-define-from-file=env.json`
 - `env.json` ถูก `.gitignore` ไว้แล้ว **ห้าม commit**
-- ตอนนี้แอปเป็นหน้าเปล่า ยังไม่เชื่อม Supabase จนกว่าคนที่ 1 ทำ `main.dart` และ `core/` เสร็จ (ดู person-1)
+- แอปเชื่อม Supabase และล็อกอินได้แล้ว (ฝั่งนิสิต/ป้อมยามยังเป็นหน้า placeholder ใน `lib/core/router/feature_routes.dart` ให้คนที่ 2/3 แทนที่ด้วย route ของตัวเอง)
 
 ## โครงโฟลเดอร์
 
