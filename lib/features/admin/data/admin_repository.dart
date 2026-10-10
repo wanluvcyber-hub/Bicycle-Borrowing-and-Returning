@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/errors/app_error.dart';
 import '../../../core/models/bike.dart';
 import '../../../core/supabase/supabase_client.dart';
+import 'admin_dashboard.dart';
 import 'student_import.dart';
 
 /// จักรยานพร้อมรหัสล็อก (แอดมินอ่าน `bike_locks` ได้)
@@ -110,6 +111,32 @@ class AdminRepository {
       if (data.length < page) break;
     }
     return result;
+  }
+
+  // ---------- แดชบอร์ด (อ่านอย่างเดียว) ----------
+
+  /// ตัวเลขสรุปหน้าแดชบอร์ด: อ่าน bikes / loans / students ผ่านสิทธิ์ admin ที่มีอยู่แล้ว
+  /// loans ดึงเฉพาะที่ยังไม่คืน หรือยืม/คืนตั้งแต่ต้นวันนี้ (เวลาไทย)
+  Future<AdminDashboard> fetchDashboard({DateTime? now}) async {
+    final t = now ?? DateTime.now();
+    final start = thaiDayStart(t).toIso8601String();
+    final bikes = await supabase.from('bikes').select('bike_no, status, note');
+    final loans = await supabase
+        .from('loans')
+        .select(
+          'loan_id, bike_no, student_id, borrowed_at, due_at, returned_at, is_late, '
+          'students(full_name, building, room, phone)',
+        )
+        .or(
+          'returned_at.is.null,returned_at.gte.$start,borrowed_at.gte.$start',
+        );
+    final students = await supabase.from('students').count();
+    return AdminDashboard.fromRows(
+      bikes: [for (final r in bikes) Map<String, dynamic>.from(r)],
+      loans: [for (final r in loans) Map<String, dynamic>.from(r)],
+      studentCount: students,
+      now: t,
+    );
   }
 
   // ---------- จักรยาน / รหัสล็อก / งานซ่อม ----------

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/models/bike.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/design_widgets.dart';
 import '../../../core/widgets/message_view.dart';
 import '../data/admin_repository.dart';
 import '../state/admin_bikes_provider.dart';
@@ -27,25 +29,91 @@ class BikesPage extends StatelessWidget {
               ],
             );
           }
-          return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 88),
+          return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             itemCount: p.bikes.length,
-            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, i) {
               final item = p.bikes[i];
               final b = item.bike;
-              return ListTile(
-                leading: _StatusDot(b.status),
-                title: Text(b.bikeNo),
-                subtitle: Text(
-                  [
-                    b.station ?? 'ไม่ระบุจุดจอด',
-                    b.status.labelTh,
-                    if (item.lockCode == null) 'ยังไม่มีรหัสล็อก',
-                  ].join(' · '),
+              final color = _statusColor(b.status);
+              final theme = Theme.of(context);
+              return Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => _showEdit(context, item),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        IconBadge(
+                          icon: Icons.pedal_bike,
+                          color: color,
+                          background: color.withValues(alpha: 0.12),
+                          size: 52,
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                b.bikeNo,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.place_outlined,
+                                    size: 15,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      b.station ?? 'ไม่ระบุจุดจอด',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (item.lockCode == null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 6),
+                                  child: StatusPill(
+                                    label: 'ยังไม่มีรหัสล็อก',
+                                    color: context.status.overdue,
+                                    icon: Icons.lock_open,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            StatusPill(
+                              label: b.status.labelTh,
+                              color: color,
+                              icon: _statusIcon(b.status),
+                            ),
+                            const SizedBox(height: 6),
+                            Icon(
+                              Icons.edit_outlined,
+                              size: 18,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                trailing: const Icon(Icons.edit_outlined),
-                onTap: () => _showEdit(context, item),
               );
             },
           );
@@ -93,25 +161,17 @@ class BikesPage extends StatelessWidget {
   }
 }
 
-class _StatusDot extends StatelessWidget {
-  const _StatusDot(this.status);
-  final BikeStatus status;
+Color _statusColor(BikeStatus status) => switch (status) {
+  BikeStatus.available => const Color(0xFF2E7D32),
+  BikeStatus.borrowed => const Color(0xFF1565C0),
+  BikeStatus.broken => const Color(0xFF424242),
+};
 
-  @override
-  Widget build(BuildContext context) {
-    final color = switch (status) {
-      BikeStatus.available => const Color(0xFF2E7D32),
-      BikeStatus.borrowed => const Color(0xFF1565C0),
-      BikeStatus.broken => const Color(0xFF424242),
-    };
-    return Icon(
-      Icons.circle,
-      color: color,
-      size: 16,
-      semanticLabel: status.labelTh,
-    );
-  }
-}
+IconData _statusIcon(BikeStatus status) => switch (status) {
+  BikeStatus.available => Icons.check_circle,
+  BikeStatus.borrowed => Icons.pedal_bike,
+  BikeStatus.broken => Icons.build,
+};
 
 class _AddBikeDialog extends StatefulWidget {
   const _AddBikeDialog();
@@ -179,10 +239,7 @@ class _AddBikeDialogState extends State<_AddBikeDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(
-                _error!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
+              ErrorNotice(_error!),
             ],
           ],
         ),

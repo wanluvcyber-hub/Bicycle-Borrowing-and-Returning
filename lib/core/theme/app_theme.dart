@@ -173,6 +173,8 @@ class AppTheme {
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         shape: stadium,
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
         extendedTextStyle: buttonText,
       ),
       inputDecorationTheme: InputDecorationTheme(

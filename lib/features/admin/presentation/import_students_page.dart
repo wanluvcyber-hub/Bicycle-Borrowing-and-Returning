@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/design_widgets.dart';
 import '../data/admin_repository.dart';
 import '../data/student_import.dart';
 import '../state/student_import_provider.dart';
@@ -78,10 +80,17 @@ class _PickStepState extends State<_PickStep> {
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(12),
-          color: theme.colorScheme.surfaceContainerHighest,
+          decoration: BoxDecoration(
+            color: const Color(0xFF04202B),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: const SelectableText(
             kStudentCsvExample,
-            style: TextStyle(fontFamily: 'monospace', fontSize: 12),
+            style: TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 12,
+              color: Colors.white,
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -90,12 +99,10 @@ class _PickStepState extends State<_PickStep> {
           'ส่วนสถานะยืนยันหอในและจำนวนครั้งที่คืนสายไม่ถูกแตะ',
           style: theme.textTheme.bodySmall,
         ),
-        if (error != null) ...[
-          const SizedBox(height: 12),
-          Text(error, style: TextStyle(color: theme.colorScheme.error)),
-        ],
+        if (error != null) ...[const SizedBox(height: 12), ErrorNotice(error)],
         const SizedBox(height: 24),
         FilledButton.icon(
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
           onPressed: _pick,
           icon: const Icon(Icons.upload_file),
           label: const Text('เลือกไฟล์ CSV'),
@@ -124,23 +131,38 @@ class _PreviewStep extends StatelessWidget {
               Text(p.fileName ?? '', style: theme.textTheme.titleMedium),
               const SizedBox(height: 8),
               for (final e in parsed.fileErrors)
-                Text(e, style: TextStyle(color: theme.colorScheme.error)),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ErrorNotice(e),
+                ),
               if (parsed.ignoredColumns.isNotEmpty)
                 Text(
                   'ข้ามคอลัมน์ที่ไม่รู้จัก: ${parsed.ignoredColumns.join(', ')}',
                   style: theme.textTheme.bodySmall,
                 ),
               if (parsed.fileErrors.isEmpty) ...[
-                Text(
-                  'ผ่าน ${valid.length} แถว · ไม่ผ่าน ${invalid.length} แถว',
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    StatusPill(
+                      label: 'ผ่าน ${valid.length} แถว',
+                      color: context.status.available,
+                      icon: Icons.check_circle,
+                    ),
+                    StatusPill(
+                      label: 'ไม่ผ่าน ${invalid.length} แถว',
+                      color: invalid.isEmpty
+                          ? theme.colorScheme.onSurfaceVariant
+                          : context.status.overdue,
+                      icon: Icons.error_outline,
+                    ),
+                  ],
                 ),
                 if (p.error != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      p.error!,
-                      style: TextStyle(color: theme.colorScheme.error),
-                    ),
+                    child: ErrorNotice(p.error!),
                   ),
                 if (invalid.isNotEmpty) ...[
                   const SizedBox(height: 16),
@@ -221,10 +243,40 @@ class _DoneStep extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('นำเข้าเสร็จแล้ว', style: theme.textTheme.titleLarge),
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 22,
+              backgroundColor: context.status.available,
+              child: const Icon(Icons.check, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            Text('นำเข้าเสร็จแล้ว', style: theme.textTheme.titleLarge),
+          ],
+        ),
         const SizedBox(height: 12),
-        Text(
-          'เพิ่มใหม่ ${s.added} · แก้ไข ${s.updated} · ผิด ${s.issues.length}',
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            StatusPill(
+              label: 'เพิ่มใหม่ ${s.added}',
+              color: context.status.available,
+              icon: Icons.person_add_alt,
+            ),
+            StatusPill(
+              label: 'แก้ไข ${s.updated}',
+              color: context.status.borrowed,
+              icon: Icons.edit_outlined,
+            ),
+            StatusPill(
+              label: 'ผิด ${s.issues.length}',
+              color: s.issues.isEmpty
+                  ? theme.colorScheme.onSurfaceVariant
+                  : context.status.overdue,
+              icon: Icons.error_outline,
+            ),
+          ],
         ),
         if (s.issues.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -244,7 +296,11 @@ class _DoneStep extends StatelessWidget {
             ),
         ],
         const SizedBox(height: 24),
-        FilledButton(onPressed: p.reset, child: const Text('นำเข้าไฟล์อื่น')),
+        FilledButton(
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+          onPressed: p.reset,
+          child: const Text('นำเข้าไฟล์อื่น'),
+        ),
       ],
     );
   }
