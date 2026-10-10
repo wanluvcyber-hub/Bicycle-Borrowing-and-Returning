@@ -1,105 +1,127 @@
 # ระบบยืม-คืนจักรยานหอใน (bike_loan)
 
-แอปมือถือ (Flutter + Supabase) ให้นิสิตหอในยืมจักรยานเองด้วยการสแกน QR และคืนที่ป้อมยามซึ่งมีโปรแกรมไว้ตรวจสอบ
-รายวิชา Mobile Application · มหาวิทยาลัยนเรศวร · ทีม 4 คน
+แอปพลิเคชันมือถือสำหรับนิสิตหอพักในมหาวิทยาลัยนเรศวร ใช้ยืมจักรยานของหอพักด้วยตนเองผ่านการสแกน QR บนตัวจักรยาน
+และคืนที่ป้อมยามซึ่งมีโปรแกรมสำหรับตรวจสภาพและบันทึกการรับคืน
 
-**อ่านตามลำดับนี้:** README นี้ → ไฟล์ของตัวเองใน `docs/person-X-...md` → `docs/database.md` (ทุกคนต้องอ่าน)
-แผนระบบเต็ม (Flow, DFD, Data Dictionary) เปิดดูที่ `docs/bike-system-plan.html`
+โปรเจกต์รายวิชา Mobile Application · พัฒนาด้วย Flutter และ Supabase
 
-## ใครทำอะไร
+## ฟังก์ชันหลัก
 
-| คน | งาน | Process | โฟลเดอร์ที่เป็นเจ้าของ | เอกสารงาน |
-|---|---|---|---|---|
-| คนที่ 1 | ตั้งโปรเจกต์/ฐานข้อมูล, ล็อกอิน+ยืนยันหอใน, หน้าผู้ดูแลระบบ, โค้ดกลาง `core/` | 1.0, 7.0 | `lib/core/` `lib/features/auth/` `lib/features/admin/` `supabase/` | [person-1-auth-admin.md](docs/person-1-auth-admin.md) |
-| คนที่ 2 | แสดงจักรยานว่าง, สแกน QR ยืม, รหัสล็อก+นับถอยหลัง (แอปนิสิต) | 2.0, 3.0 | `lib/features/borrow/` | [person-2-borrow.md](docs/person-2-borrow.md) |
-| คนที่ 3 | โปรแกรมป้อมยาม: รับคืน+ตรวจสภาพ, สรุป/สถานะทุกคัน, ค้นประวัติ | 5.0, 6.0 | `lib/features/guard/` | [person-3-guard.md](docs/person-3-guard.md) |
-| คนที่ 4 | แจ้งเตือนก่อนถึงเวลาคืน, สถานะเกินเวลา, ทดสอบ, ดูแลเอกสาร | 4.0 + ทดสอบ + เอกสาร | `lib/features/reminder/` `test/` `docs/` | [person-4-reminder-test-docs.md](docs/person-4-reminder-test-docs.md) |
-| ทุกคน | ฐานข้อมูล: ตาราง ฟังก์ชัน สิทธิ์ รหัส error | — | `supabase/` | [database.md](docs/database.md) |
+**นิสิต**
+- ดูจำนวนจักรยานว่างและสถานะแต่ละคัน (อัปเดตสดเมื่อมีการยืม/คืน)
+- สแกน QR (หรือพิมพ์เลขคัน) เพื่อยืม · ยืมได้ครั้งละ 1 คัน
+- รับรหัสล็อกล้อและดูเวลานับถอยหลังถึงกำหนดคืน 21:00 น. (ปิดแอปแล้วเปิดใหม่ข้อมูลยังอยู่)
+- แจ้งเตือนก่อนถึงกำหนดคืน 30 และ 10 นาที, เตือนเมื่อเกินเวลา และมีแถบนับถอยหลังในแถบแจ้งเตือน
 
-เส้นหลักที่ต้องใช้งานได้ก่อนอย่างอื่น: **สแกนยืม → ได้รหัสล็อก → ป้อมยามรับคืน**
+**ป้อมยาม**
+- แดชบอร์ดสรุปสถานะจักรยานทุกคัน พร้อมรายการที่เกินเวลาและข้อมูลผู้ยืม
+- รับคืนและตรวจสภาพ (ปกติ/ชำรุด พร้อมหมายเหตุ) โดยเห็นข้อมูลผู้ยืมก่อนยืนยัน
+- ค้นประวัติการยืมด้วยรหัสนิสิต
 
-## เริ่มรันโปรเจกต์ (ทุกคน)
+**ผู้ดูแลระบบ**
+- แดชบอร์ดภาพรวม: สถานะฝูงจักรยาน อัตราหมุนเวียน รายการเกินเวลา และสถิติประจำวัน
+- นำเข้ารายชื่อนิสิตหอในจากไฟล์ CSV
+- จัดการจักรยาน รหัสล็อก และงานซ่อม
 
-ต้องการ Flutter **3.47.x** (Dart 3.13.x) ตรวจด้วย `flutter --version` ให้ตรงกันทั้งทีม
+กฎของระบบ (ยืมได้ก่อน 21:00 น., ยืมได้ครั้งละ 1 คัน, คืนสายนับจำนวนครั้ง ฯลฯ) ถูกบังคับที่ฐานข้อมูล
+แอปทำหน้าที่แสดงผลและส่งคำขอ
+
+## เทคโนโลยี
+
+| ส่วน | ใช้ |
+|---|---|
+| แอป | Flutter 3.47 (Dart 3.13), Material 3 |
+| State | provider |
+| นำทาง | go_router |
+| ฐานข้อมูล/ล็อกอิน/Realtime | Supabase (PostgreSQL + Row Level Security) |
+| สแกน QR | mobile_scanner |
+| แจ้งเตือน | flutter_local_notifications, timezone |
+| อื่นๆ | intl, file_picker |
+| ฟอนต์ | Prompt, Noto Sans Thai (ฝังในแอป) |
+
+## การติดตั้งและรัน
+
+ต้องมี Flutter 3.47.x (ตรวจด้วย `flutter --version`)
 
 ```bash
 git clone <ลิงก์ repo>
 cd bike_loan
 flutter pub get
-cp env.example.json env.json      # แล้วใส่ URL กับ anon key ที่คนที่ 1 ส่งให้ทางแชตส่วนตัว
+cp env.example.json env.json       # ใส่ Supabase URL และ anon key
 flutter run --dart-define-from-file=env.json
 ```
-- VS Code: กด F5 ได้เลย (มี `.vscode/launch.json` โหลด `env.json` ให้)
+
+- `env.json` อยู่ใน `.gitignore` ไม่ต้อง commit
+- VS Code: กด F5 ได้ (`.vscode/launch.json` โหลด `env.json` ให้)
 - Android Studio: Run → Edit Configurations → Additional run args ใส่ `--dart-define-from-file=env.json`
-- `env.json` ถูก `.gitignore` ไว้แล้ว **ห้าม commit**
-- แอปเชื่อม Supabase และล็อกอินได้แล้ว (ฝั่งนิสิต/ป้อมยามยังเป็นหน้า placeholder ใน `lib/core/router/feature_routes.dart` ให้คนที่ 2/3 แทนที่ด้วย route ของตัวเอง)
 
-## โครงโฟลเดอร์
+### ตั้งค่า Supabase
 
-```
-bike_loan/
-├─ lib/
-│  ├─ main.dart                  จุดเริ่มต้น (คนที่ 1 เติม)
-│  ├─ core/                      โค้ดที่ทุกคนใช้ร่วมกัน (คนที่ 1 เขียนก่อน แล้วแก้ผ่าน PR เล็กๆ เท่านั้น)
-│  │  ├─ config/  supabase/  models/  errors/  router/  theme/  widgets/  utils/
-│  └─ features/                  แยกตามฟีเจอร์ 1 โฟลเดอร์ = 1 เจ้าของ
-│     ├─ auth/       คนที่ 1   ┐
-│     ├─ admin/      คนที่ 1   │ แต่ละฟีเจอร์แบ่งเป็น
-│     ├─ borrow/     คนที่ 2   │   data/          เรียก Supabase
-│     ├─ guard/      คนที่ 3   │   state/         Provider (ChangeNotifier)
-│     └─ reminder/   คนที่ 4   ┘   presentation/  หน้าจอและ widget
-├─ test/                         เทสต์ (คนที่ 4 ดูแล แต่ละคนเขียนเทสต์ของตัวเองใน test/features/<ฟีเจอร์>/)
-├─ supabase/
-│  ├─ migrations/001_init.sql    ตาราง + กฎสิทธิ์ + ฟังก์ชัน (แก้ผ่านไฟล์ใหม่เท่านั้น)
-│  └─ seed.sql                   ข้อมูลทดสอบ
-├─ docs/                         เอกสารทีม + แผนระบบ
-├─ android/ ios/                 ตั้งค่า native แล้ว (ดูด้านล่าง)
-├─ env.example.json              แบบของ env.json
-└─ pubspec.yaml                  รายการ package (เติมไว้ให้แล้ว)
-```
-ทุกโฟลเดอร์ที่ยังว่างมีไฟล์ `.gitkeep` เพื่อให้ git เก็บโครงไว้ ลบทิ้งได้เมื่อมีไฟล์จริงในนั้น
+1. สร้างโปรเจกต์ที่ supabase.com
+2. ใน SQL Editor รัน `supabase/migrations/001_init.sql` แล้วรัน `supabase/seed.sql` (ข้อมูลทดสอบ จักรยาน 10 คัน นิสิต 20 คน)
+3. สร้างผู้ใช้ทดสอบใน Authentication → Users แล้วรัน `seed.sql` อีกครั้งเพื่อผูกบัญชีเจ้าหน้าที่
+4. คัดลอก Project URL และ anon key ไปใส่ใน `env.json`
 
-## กติกาทีม (ข้อนี้คือสิ่งที่กันโปรเจกต์ล่ม)
+รายละเอียดทั้งหมดอยู่ใน [docs/database.md](docs/database.md) (ตาราง, ฟังก์ชัน, สิทธิ์, รหัสข้อผิดพลาด)
 
-1. **ห้าม push ตรงเข้า `main`** ทุกงานเริ่มจาก branch ตั้งชื่อ `feat/<คนที่>-<งาน>` เช่น `feat/p2-scan-qr` แล้วเปิด Pull Request ให้เพื่อนอย่างน้อย 1 คนดูก่อน merge
-   (ถ้า GitHub ตั้ง branch protection ใน repo private แผนฟรีไม่ได้ ให้ถือเป็นกติกาที่ตกลงกันเอง)
-2. **แก้เฉพาะโฟลเดอร์ของตัวเอง** ไฟล์ที่ทุกคนพึ่ง คือ `pubspec.yaml`, `lib/main.dart`, `lib/core/**`, `supabase/**`, `android/**`, `ios/**` ให้แก้ผ่าน PR เล็กๆ (เปลี่ยนเรื่องเดียว) และ **แจ้งในกลุ่มก่อน merge** เพราะเป็นจุดที่ conflict บ่อยสุด
-3. **ก่อนเริ่มงานทุกวัน:** `git checkout main && git pull` แล้วค่อยแตก branch / merge `main` เข้า branch ตัวเองอย่างน้อยวันละครั้ง ยิ่งค้างนาน conflict ยิ่งใหญ่
-4. **PR เล็ก เปลี่ยนเรื่องเดียว** ดีกว่า PR ใหญ่ครั้งเดียวตอนใกล้ส่ง ตั้งชื่อ commit ให้อ่านรู้เรื่อง เช่น `borrow: เพิ่มหน้าสแกน QR`
-5. **ชื่อฟิลด์ ค่าสถานะ รหัส error ใช้ตาม `docs/database.md` เท่านั้น** จะเปลี่ยนต้องแจ้งทุกคนก่อน
-6. **ห้ามแก้ฐานข้อมูลใน Supabase Dashboard** แก้ผ่านไฟล์ใน `supabase/migrations/` (วิธีอยู่ใน database.md หัวข้อ 9)
-7. **ห้าม commit ความลับ:** `env.json`, `service_role` key, รหัสผ่าน, รหัสล็อกจริง
-8. ก่อนเปิด PR ต้องรัน `flutter analyze` ให้ **ไม่มี issue** และ `flutter test` ผ่าน
-   (เทสต์อยู่ใน `test/` แบ่งตามฟีเจอร์ ตั้งชื่อไฟล์ `*_test.dart` · `test/core/schema_sync_test.dart` จะแดงถ้า SQL, โค้ด และ `docs/database.md` ไม่ตรงกัน ให้แก้ให้ตรงกันใน PR เดียวกัน)
-9. ติดปัญหากับงานของคนอื่น (เช่น รอ `core/` ของคนที่ 1) ให้ถามในกลุ่มทันที อย่ารอ และอย่าแก้โค้ดของเขาเอง
+บัญชีทดสอบ (ตั้งตามขั้นตอนใน database.md): `test01@example.com` (นิสิต), `guard01@example.com` (ป้อมยาม), `admin01@example.com` (ผู้ดูแลระบบ)
 
-### PR checklist (ก๊อปไปใส่ในคำอธิบาย PR)
-- [ ] แก้เฉพาะโฟลเดอร์ของตัวเอง (ถ้าแตะไฟล์ร่วม บอกในกลุ่มแล้ว)
-- [ ] `flutter analyze` ไม่มี issue, `flutter test` ผ่าน
-- [ ] ลองรันบนเครื่อง/emulator จริงแล้ว (ไม่ใช่แค่คอมไพล์ผ่าน)
-- [ ] ไม่มี key/รหัสผ่านใน diff
-- [ ] ถ้าแตะฐานข้อมูล: มีไฟล์ migration ใหม่ + แก้ `docs/database.md` ใน PR เดียวกัน
-
-## เริ่ม repo ครั้งแรก (คนที่ 1)
+## การทดสอบ
 
 ```bash
-cd bike_loan
-git init -b main
-git add .
-git commit -m "Initial project structure"
-git remote add origin <ลิงก์ repo ที่สร้างบน GitHub>
-git push -u origin main
+flutter analyze
+flutter test
 ```
-จากนั้นเชิญเพื่อนที่ GitHub → Settings → Collaborators
 
-## สิ่งที่ตั้งค่าไว้แล้ว (อย่าลบ)
+- เทสต์อยู่ใน `test/` แบ่งตามฟีเจอร์ ไฟล์ `test/core/schema_sync_test.dart` ตรวจว่า SQL, โค้ด และ `docs/database.md` ตรงกัน
+- ทดลองระบบแจ้งเตือนโดยไม่ต้องใช้ Supabase: `flutter run -t lib/features/reminder/demo/reminder_demo.dart`
+- ดูหน้าของแต่ละฝั่งด้วยข้อมูลจำลอง: `lib/features/borrow/borrow_preview.dart`, `lib/features/guard/guard_preview.dart`
+- ผลทดสอบและเช็กลิสต์ทดสอบรวม: [docs/test-results.md](docs/test-results.md)
 
-- **Package ที่เติมไว้ใน `pubspec.yaml`:** `supabase_flutter` (ฐานข้อมูล+ล็อกอิน), `provider` (state ตามที่เรียนในวิชา), `go_router` (นำทาง — ถ้าทีมอยากใช้ `Navigator` ธรรมดาตาม lab ให้คนที่ 1 ลบออกใน PR แรก), `mobile_scanner` (สแกน QR), `flutter_local_notifications` + `timezone` + `flutter_timezone` (แจ้งเตือน), `intl` (วันที่/เวลา)
-- **Android** (`android/app/build.gradle.kts`, `AndroidManifest.xml`): เปิด core library desugaring (จำเป็นสำหรับ `flutter_local_notifications` ไม่งั้น build ล่ม) · `minSdk = 24` (จำเป็นสำหรับ `mobile_scanner`) · สิทธิ์ INTERNET, CAMERA, POST_NOTIFICATIONS
-- **iOS** (`Info.plist`): คำอธิบายการใช้กล้อง
-- ถ้าเพิ่ม package ที่ต้องตั้งค่า native เพิ่ม ให้เปิด PR แยกแล้วแจ้งทีม และทดสอบ `flutter build apk --debug` ก่อน merge
+## โครงสร้างโปรเจกต์
 
-## ลิงก์
+```
+lib/
+├─ main.dart
+├─ core/              โค้ดที่ใช้ร่วมกัน: config, supabase, models, errors, router, theme, widgets, utils
+└─ features/
+   ├─ auth/           ล็อกอินและตรวจสิทธิ์
+   ├─ admin/          หน้าผู้ดูแลระบบ
+   ├─ borrow/         แอปนิสิต: ดูจักรยาน สแกน ยืม รหัสล็อก
+   ├─ guard/          โปรแกรมป้อมยาม: แดชบอร์ด รับคืน ค้นประวัติ
+   └─ reminder/       แจ้งเตือนก่อนถึงเวลาคืนและสถานะเกินเวลา
+        (แต่ละฟีเจอร์แบ่งเป็น data/ เรียก Supabase · state/ Provider · presentation/ หน้าจอ)
+test/                 เทสต์ แบ่งตามฟีเจอร์
+supabase/             migrations และข้อมูลทดสอบ
+assets/               ฟอนต์ ไอคอน โลโก้
+docs/                 เอกสารฐานข้อมูล แผนระบบ ผลทดสอบ
+```
 
-- แผนระบบ: `docs/bike-system-plan.html` (เปิดด้วยเบราว์เซอร์)
-- ฐานข้อมูล: `docs/database.md`
+## ผู้พัฒนา
+
+| ผู้พัฒนา | ส่วนที่รับผิดชอบ |
+|---|---|
+| คนที่ 1 | ฐานข้อมูล, ล็อกอินและยืนยันสิทธิ์หอใน, หน้าผู้ดูแลระบบ, โค้ดกลาง (`core/`) |
+| คนที่ 2 | แอปนิสิต: แสดงจักรยานว่าง, สแกน QR ยืม, รหัสล็อกและนับถอยหลัง |
+| คนที่ 3 | โปรแกรมป้อมยาม: รับคืนและตรวจสภาพ, สรุปสถานะ, ค้นประวัติ |
+| คนที่ 4 | แจ้งเตือนเวลาคืนและสถานะเกินเวลา, การทดสอบ, เอกสาร |
+
+เอกสารแบ่งงานรายคนอยู่ใน `docs/person-*.md`
+
+## แนวทางการทำงานร่วมกัน
+
+- แตก branch ของงานตัวเอง (เช่น `feat/p2-scan-qr`) แล้วเปิด Pull Request ก่อนรวมเข้า `main`
+- การเปลี่ยนฐานข้อมูลทำผ่านไฟล์ใหม่ใน `supabase/migrations/` และแก้ `docs/database.md` ใน PR เดียวกัน
+- ก่อนเปิด PR รัน `flutter analyze` และ `flutter test` ให้ผ่าน
+- ห้าม commit ความลับ: `env.json`, `service_role` key, รหัสผ่าน
+
+## การตั้งค่า native ที่เกี่ยวข้อง
+
+- Android: เปิด core library desugaring (ที่ `flutter_local_notifications` ต้องใช้), `minSdk = 24` (สำหรับ `mobile_scanner`), สิทธิ์ INTERNET, CAMERA, POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM, RECEIVE_BOOT_COMPLETED และตัวรับแจ้งเตือนของ `flutter_local_notifications` ใน `AndroidManifest.xml`
+- iOS: คำอธิบายการใช้กล้องใน `Info.plist`
+
+## เอกสารเพิ่มเติม
+
+- [docs/database.md](docs/database.md) ฐานข้อมูลและรหัสข้อผิดพลาด
+- [docs/bike-system-plan.html](docs/bike-system-plan.html) แผนระบบ (Flow, DFD, Data Dictionary)
+- [docs/test-results.md](docs/test-results.md) ผลการทดสอบ
