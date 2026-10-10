@@ -70,7 +70,7 @@ bike_loan/
 6. **ห้ามแก้ฐานข้อมูลใน Supabase Dashboard** แก้ผ่านไฟล์ใน `supabase/migrations/` (วิธีอยู่ใน database.md หัวข้อ 9)
 7. **ห้าม commit ความลับ:** `env.json`, `service_role` key, รหัสผ่าน, รหัสล็อกจริง
 8. ก่อนเปิด PR ต้องรัน `flutter analyze` ให้ **ไม่มี issue** และ `flutter test` ผ่าน
-   (ตอนนี้ยังไม่มีไฟล์เทสต์เลย `flutter test` จึงขึ้น error "does not appear to contain any test files" เป็นเรื่องปกติ จนกว่าคนที่ 4 หรือใครสักคนจะเพิ่มไฟล์ `*_test.dart` ไฟล์แรกใน `test/`)
+   (เทสต์อยู่ใน `test/` แบ่งตามฟีเจอร์ ตั้งชื่อไฟล์ `*_test.dart` · `test/core/schema_sync_test.dart` จะแดงถ้า SQL, โค้ด และ `docs/database.md` ไม่ตรงกัน ให้แก้ให้ตรงกันใน PR เดียวกัน)
 9. ติดปัญหากับงานของคนอื่น (เช่น รอ `core/` ของคนที่ 1) ให้ถามในกลุ่มทันที อย่ารอ และอย่าแก้โค้ดของเขาเอง
 
 ### PR checklist (ก๊อปไปใส่ในคำอธิบาย PR)

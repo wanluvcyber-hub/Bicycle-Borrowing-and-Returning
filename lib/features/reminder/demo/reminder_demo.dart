@@ -79,7 +79,14 @@ class DemoLoanSource implements ActiveLoanSource {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ReminderService.instance.init(); // ขอสิทธิ์แจ้งเตือนตั้งแต่เปิดแอป
+  // ขอสิทธิ์แจ้งเตือนตั้งแต่เปิดแอป · ถ้าพังต้องไม่ทำให้หน้าขาว ให้โชว์ error บนจอแทน
+  String? initError;
+  try {
+    await ReminderService.instance.init();
+  } catch (e, st) {
+    debugPrint('[demo] init แจ้งเตือนไม่สำเร็จ: $e\n$st');
+    initError = '$e';
+  }
   final source = DemoLoanSource();
   runApp(
     ChangeNotifierProvider(
@@ -87,15 +94,18 @@ Future<void> main() async {
       child: MaterialApp(
         title: 'Reminder demo',
         theme: AppTheme.forRole(null),
-        home: ReminderLifecycle(child: _DemoPage(source: source)),
+        home: ReminderLifecycle(
+          child: _DemoPage(source: source, initError: initError),
+        ),
       ),
     ),
   );
 }
 
 class _DemoPage extends StatefulWidget {
-  const _DemoPage({required this.source});
+  const _DemoPage({required this.source, this.initError});
   final DemoLoanSource source;
+  final String? initError;
 
   @override
   State<_DemoPage> createState() => _DemoPageState();
@@ -168,6 +178,15 @@ class _DemoPageState extends State<_DemoPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (widget.initError != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                'เริ่มระบบแจ้งเตือนไม่สำเร็จ (แพลตฟอร์มนี้อาจไม่รองรับ): '
+                '${widget.initError}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
           if (loan != null) ...[
             if (loan.isOverdueAt(DateTime.now()))
               Padding(

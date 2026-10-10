@@ -67,6 +67,23 @@ class ReminderProvider extends ChangeNotifier {
     }
   }
 
+  /// ทางลัดสำหรับฟีเจอร์ยืม (ที่ไม่ได้ใช้ [ActiveLoan] ของ core) ให้ส่งแค่ข้อมูลที่จำเป็น
+  /// ไม่รับรหัสล็อก เพื่อไม่ให้รหัสล็อกวิ่งมาถึงส่วนแจ้งเตือนโดยไม่จำเป็น
+  Future<void> onLoanStarted({
+    required int loanId,
+    required String bikeNo,
+    required DateTime borrowedAt,
+    required DateTime dueAt,
+  }) => startLoan(
+    ActiveLoan(
+      loanId: loanId,
+      bikeNo: bikeNo,
+      lockCode: '',
+      borrowedAt: borrowedAt,
+      dueAt: dueAt,
+    ),
+  );
+
   /// ล้างตอนออกจากระบบ (กันเตือนของคนเก่าโผล่ให้คนใหม่)
   Future<void> clear() async {
     _generation++;
