@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/widgets/design_widgets.dart';
 import '../data/borrow_models.dart';
 import '../data/borrow_repository.dart';
 import '../state/borrow_provider.dart';
@@ -46,41 +47,57 @@ class _HomeScaffold extends StatelessWidget {
   Future<void> _scan(BuildContext context) async {
     final provider = context.read<BorrowProvider>();
     final navigator = Navigator.of(context);
-    final qr = await navigator
-        .push<String>(MaterialPageRoute(builder: (_) => const ScanPage()));
+    final qr = await navigator.push<String>(
+      MaterialPageRoute(builder: (_) => const ScanPage()),
+    );
     if (qr == null) return;
     provider.clearBorrowError();
-    await navigator.push(MaterialPageRoute<void>(
-      builder: (_) => ChangeNotifierProvider.value(
-        value: provider,
-        child: ConfirmBorrowPage(qrCode: qr),
+    await navigator.push(
+      MaterialPageRoute<void>(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: provider,
+          child: ConfirmBorrowPage(qrCode: qr),
+        ),
       ),
-    ));
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final p = context.watch<BorrowProvider>();
     final loan = p.myLoan;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final profile = p.profile;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(p.profile == null ? 'ยืมจักรยาน' : 'สวัสดี ${p.profile!.fullName}'),
-        backgroundColor: studentColor,
+        titleSpacing: 16,
+        title: const BrandTitle(subtitle: 'นิสิตหอใน'),
         actions: [
           IconButton(
             tooltip: 'ออกจากระบบ',
-            onPressed: onSignOut ?? () => Supabase.instance.client.auth.signOut(),
+            onPressed:
+                onSignOut ?? () => Supabase.instance.client.auth.signOut(),
             icon: const Icon(Icons.logout),
           ),
+          const SizedBox(width: 4),
         ],
       ),
-      floatingActionButton: loan == null
-          ? FloatingActionButton.extended(
-              backgroundColor: studentColor,
-              onPressed: () => _scan(context),
-              icon: const Icon(Icons.qr_code_scanner),
-              label: const Text('สแกน QR ยืม'),
+      // ปุ่มหลักของหน้า: ยืมได้ทีละ 1 คัน จึงซ่อนเมื่อมีรายการค้าง
+      bottomNavigationBar: loan == null
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(60),
+                  ),
+                  onPressed: () => _scan(context),
+                  icon: const Icon(Icons.qr_code_scanner),
+                  label: const Text('สแกน QR ยืมจักรยาน'),
+                ),
+              ),
             )
           : null,
       body: RefreshIndicator(
@@ -88,6 +105,48 @@ class _HomeScaffold extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  IconBadge(
+                    icon: Icons.school,
+                    color: scheme.primary,
+                    background: scheme.primary.withValues(alpha: 0.12),
+                    size: 56,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('นิสิตหอใน', style: theme.textTheme.bodySmall),
+                        Text(
+                          profile == null
+                              ? 'สวัสดี'
+                              : 'สวัสดี ${profile.fullName}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (profile != null)
+                          Text(
+                            'รหัส ${profile.studentId}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             if (p.loadError != null) ...[
               ErrorBanner(p.loadError!),
               const SizedBox(height: 12),

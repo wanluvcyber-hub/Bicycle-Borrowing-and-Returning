@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/widgets/design_widgets.dart';
 import '../../auth/presentation/sign_out_button.dart';
 import '../data/admin_repository.dart';
 import '../state/admin_bikes_provider.dart';
@@ -31,8 +32,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
       create: (_) => AdminBikesProvider(AdminRepository())..load(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_titles[_index]),
-          actions: const [SignOutButton()],
+          titleSpacing: 16,
+          title: BrandTitle(subtitle: 'ผู้ดูแลระบบ · ${_titles[_index]}'),
+          actions: const [SignOutButton(), SizedBox(width: 4)],
         ),
         body: IndexedStack(
           index: _index,

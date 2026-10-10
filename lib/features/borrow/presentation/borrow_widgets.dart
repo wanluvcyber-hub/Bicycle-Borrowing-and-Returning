@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/widgets/design_widgets.dart';
 import '../data/borrow_models.dart';
 
 /// สีประจำบทบาทนิสิต = เขียว (ตามแผน)
@@ -12,7 +13,8 @@ final _timeFormat = DateFormat('HH:mm');
 String formatDate(DateTime t) => _dateFormat.format(t);
 
 /// เวลาแบบ 21.00 น.
-String formatClock(DateTime t) => '${_timeFormat.format(t).replaceAll(':', '.')} น.';
+String formatClock(DateTime t) =>
+    '${_timeFormat.format(t).replaceAll(':', '.')} น.';
 
 /// เวลาที่เหลือ/เกิน เช่น "เหลือ 2 ชม. 5 นาที" หรือ "เกินเวลา 10 นาที"
 String formatRemaining(Duration remaining) {
@@ -24,30 +26,41 @@ String formatRemaining(Duration remaining) {
   return overdue ? 'เกินเวลา $text' : 'เหลือ $text';
 }
 
+/// สีสถานะตามดีไซน์ (ว่าง=เขียว · ถูกยืม=น้ำเงิน · ชำรุด=เทาเข้ม)
 Color availabilityColor(BikeAvailability status) => switch (status) {
-      BikeAvailability.available => Colors.green,
-      BikeAvailability.borrowed => Colors.blue,
-      BikeAvailability.broken => Colors.grey,
-    };
+  BikeAvailability.available => const Color(0xFF2E7D32),
+  BikeAvailability.borrowed => const Color(0xFF1565C0),
+  BikeAvailability.broken => const Color(0xFF424242),
+};
 
+Color availabilityBackground(BikeAvailability status) => switch (status) {
+  BikeAvailability.available => const Color(0xFFE8F5E9),
+  BikeAvailability.borrowed => const Color(0xFFE3F2FD),
+  BikeAvailability.broken => const Color(0xFFEEEEEE),
+};
+
+IconData availabilityIcon(BikeAvailability status) => switch (status) {
+  BikeAvailability.available => Icons.check_circle,
+  BikeAvailability.borrowed => Icons.pedal_bike,
+  BikeAvailability.broken => Icons.build,
+};
+
+/// ป้ายสถานะ (ไอคอน + ข้อความ + สี)
 class StatusChip extends StatelessWidget {
-  const StatusChip({super.key, required this.label, required this.color});
+  const StatusChip({
+    super.key,
+    required this.label,
+    required this.color,
+    this.icon,
+  });
 
   final String label;
   final Color color;
+  final IconData? icon;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(label,
-          style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-    );
-  }
+  Widget build(BuildContext context) =>
+      StatusPill(label: label, color: color, icon: icon);
 }
 
 class ErrorBanner extends StatelessWidget {
@@ -56,15 +69,5 @@ class ErrorBanner extends StatelessWidget {
   final String message;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(message, style: const TextStyle(color: Colors.red)),
-    );
-  }
+  Widget build(BuildContext context) => ErrorNotice(message);
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/models/app_role.dart';
+import '../../core/theme/app_theme.dart';
+
 import 'data/guard_repository.dart';
 import 'presentation/guard_home_page.dart';
 
@@ -7,8 +10,10 @@ import 'presentation/guard_home_page.dart';
 //   flutter run -d chrome -t lib/features/guard/guard_preview.dart
 // ลองรับคืน B01 (ตรงเวลา) และ B03 (เกินเวลา) · ค้นประวัติ 66000001 / 66000003
 void main() {
-  runApp(MaterialApp(
-    theme: ThemeData(colorSchemeSeed: Colors.orange),
-    home: GuardHomePage(repository: FakeGuardRepository()),
-  ));
+  runApp(
+    MaterialApp(
+      theme: AppTheme.forRole(AppRole.guard),
+      home: GuardHomePage(repository: FakeGuardRepository()),
+    ),
+  );
 }

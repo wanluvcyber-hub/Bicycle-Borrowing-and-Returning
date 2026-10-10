@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/time_format.dart' show formatDuration;
 import '../data/reminder_schedule.dart';
 
@@ -18,7 +19,7 @@ class OverdueBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final status = context.status;
     final late = (now ?? DateTime.now()).difference(dueAt);
     final text = late.inMinutes < 1
         ? 'เกินเวลา · เลยกำหนด ${formatThaiClock(dueAt)} น.'
@@ -29,19 +30,20 @@ class OverdueBanner extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: scheme.errorContainer,
+          color: status.overdueContainer,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: status.overdue, width: 2),
         ),
         child: Row(
           children: [
-            Icon(Icons.alarm_off, color: scheme.onErrorContainer),
+            Icon(Icons.alarm_off, color: status.overdue),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 text,
-                style: TextStyle(
-                  color: scheme.onErrorContainer,
-                  fontWeight: FontWeight.w600,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: status.overdue,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),

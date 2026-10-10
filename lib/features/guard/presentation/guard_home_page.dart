@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/widgets/design_widgets.dart';
 import '../data/guard_repository.dart';
 import '../state/guard_provider.dart';
 import 'dashboard_page.dart';
-import 'guard_widgets.dart';
 import 'history_page.dart';
 import 'return_page.dart';
 
@@ -49,8 +49,8 @@ class _GuardScaffoldState extends State<_GuardScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ป้อมยาม · ${_titles[_index]}'),
-        backgroundColor: guardColor,
+        titleSpacing: 16,
+        title: BrandTitle(subtitle: 'ป้อมยาม · ${_titles[_index]}'),
         actions: [
           if (_index == 0)
             IconButton(
@@ -61,9 +61,11 @@ class _GuardScaffoldState extends State<_GuardScaffold> {
           IconButton(
             tooltip: 'ออกจากระบบ',
             onPressed:
-                widget.onSignOut ?? () => Supabase.instance.client.auth.signOut(),
+                widget.onSignOut ??
+                () => Supabase.instance.client.auth.signOut(),
             icon: const Icon(Icons.logout),
           ),
+          const SizedBox(width: 4),
         ],
       ),
       body: IndexedStack(index: _index, children: _pages),
@@ -71,9 +73,21 @@ class _GuardScaffoldState extends State<_GuardScaffold> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard), label: 'แดชบอร์ด'),
-          NavigationDestination(icon: Icon(Icons.assignment_return), label: 'รับคืน'),
-          NavigationDestination(icon: Icon(Icons.history), label: 'ค้นประวัติ'),
+          NavigationDestination(
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard),
+            label: 'แดชบอร์ด',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.assignment_return_outlined),
+            selectedIcon: Icon(Icons.assignment_return),
+            label: 'รับคืน',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history),
+            selectedIcon: Icon(Icons.history),
+            label: 'ค้นประวัติ',
+          ),
         ],
       ),
     );

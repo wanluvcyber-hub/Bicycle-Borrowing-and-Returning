@@ -31,6 +31,26 @@ class SplashPage extends StatelessWidget {
         ),
       );
     }
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: 96,
+                height: 96,
+                errorBuilder: (_, _, _) =>
+                    const Icon(Icons.pedal_bike, size: 72),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(),
+          ],
+        ),
+      ),
+    );
   }
 }

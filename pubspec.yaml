@@ -66,6 +66,25 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/images/
+
+  # ฟอนต์ตามดีไซน์ (Google Fonts, OFL): Prompt = หัวข้อ/ปุ่ม/ตัวเลข · Noto Sans Thai = เนื้อหา
+  fonts:
+    - family: Prompt
+      fonts:
+        - asset: assets/fonts/Prompt-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Prompt-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Prompt-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Prompt-Bold.ttf
+          weight: 700
+    - family: NotoSansThai
+      fonts:
+        - asset: assets/fonts/NotoSansThai.ttf
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

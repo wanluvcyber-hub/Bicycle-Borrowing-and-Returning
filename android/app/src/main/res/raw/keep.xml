@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- กัน R8 ตัดไอคอนแจ้งเตือนที่ plugin หาด้วยชื่อตอนรัน (build release) -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_bike,@mipmap/ic_launcher"/>

@@ -100,9 +100,9 @@ class _StatusDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (status) {
-      BikeStatus.available => Colors.green,
-      BikeStatus.borrowed => Colors.blue,
-      BikeStatus.broken => Colors.red,
+      BikeStatus.available => const Color(0xFF2E7D32),
+      BikeStatus.borrowed => const Color(0xFF1565C0),
+      BikeStatus.broken => const Color(0xFF424242),
     };
     return Icon(
       Icons.circle,

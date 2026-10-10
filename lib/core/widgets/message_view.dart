@@ -24,7 +24,15 @@ class MessageView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 56, color: theme.colorScheme.primary),
+            Container(
+              width: 96,
+              height: 96,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 48, color: theme.colorScheme.primary),
+            ),
             const SizedBox(height: 16),
             if (title != null) ...[
               Text(
