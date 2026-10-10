@@ -1,0 +1,614 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ระบบยืมจักรยานหอใน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F6F2; --surface:#FFFFFF; --ink:#18211C; --muted:#5A665F; --line:#D3DAD2;
+  --student:#1C7350; --student-tint:#E2EFE7;
+  --guard:#A95E08; --guard-tint:#F6EAD8;
+  --admin:#5A665F; --admin-tint:#E8ECE8;
+  --warn:#B3261E;
+  --display:"Chakra Petch","IBM Plex Sans Thai",system-ui,sans-serif;
+  --body:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#101512; --surface:#18201B; --ink:#E3EAE5; --muted:#9BA8A0; --line:#2C3731;
+    --student:#5CC48F; --student-tint:#18291F;
+    --guard:#E9A54D; --guard-tint:#2C2316;
+    --admin:#9BA8A0; --admin-tint:#222B26;
+    --warn:#F2827A;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#101512; --surface:#18201B; --ink:#E3EAE5; --muted:#9BA8A0; --line:#2C3731;
+  --student:#5CC48F; --student-tint:#18291F;
+  --guard:#E9A54D; --guard-tint:#2C2316;
+  --admin:#9BA8A0; --admin-tint:#222B26;
+  --warn:#F2827A;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.7;padding-inline:16px;padding-block:32px 72px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);line-height:1.25;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:600}
+h3{font-size:17px;font-weight:600}
+p{margin:0;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--line);padding-bottom:28px}
+.lede{font-size:18px;color:var(--muted)}
+.roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;padding:3px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface)}
+.dot{width:9px;height:9px;border-radius:2px;flex:none}
+.dot.s{background:var(--student)} .dot.g{background:var(--guard)} .dot.a{background:var(--admin)}
+section{display:flex;flex-direction:column;gap:18px}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.sec-head p{color:var(--muted)}
+code,.mono{font-family:var(--mono);font-size:.88em}
+
+/* flow lanes */
+.lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.lane{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px 22px;display:flex;flex-direction:column;gap:12px}
+.lane.s{border-top:3px solid var(--student)}
+.lane.g{border-top:3px solid var(--guard)}
+.lane h3 span{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted);margin-left:6px}
+.lane ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px}
+.lane li::marker{font-family:var(--mono);color:var(--muted)}
+.tag{font-family:var(--mono);font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:4px;white-space:nowrap}
+
+.needs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.needs li{background:var(--guard-tint);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.needs b{font-weight:600}
+.needs span{font-size:14px;color:var(--muted)}
+
+/* diagrams */
+figure{margin:0;display:flex;flex-direction:column;gap:10px}
+.scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.dfd{display:block;width:100%;height:auto;color:var(--ink);font-family:var(--body);font-size:12.5px}
+.dfd.l0{min-width:760px}
+.dfd.l1{min-width:980px}
+.dfd text{fill:var(--ink)}
+.dfd .lbl{fill:var(--muted);font-size:11.5px}
+.dfd .fl{stroke:var(--ink);stroke-width:1.3;fill:none}
+.dfd .ent{stroke:var(--ink);stroke-width:1.6}
+.dfd .ent.s{fill:var(--student-tint)} .dfd .ent.g{fill:var(--guard-tint)} .dfd .ent.a{fill:var(--admin-tint)}
+.dfd .proc{fill:var(--surface);stroke-width:1.8}
+.dfd .s-stroke{stroke:var(--student)} .dfd .g-stroke{stroke:var(--guard)} .dfd .a-stroke{stroke:var(--admin)}
+.dfd .pnum{font-family:var(--mono);font-size:12px;font-weight:500}
+.dfd .pnum.s{fill:var(--student)} .dfd .pnum.g{fill:var(--guard)} .dfd .pnum.a{fill:var(--admin)}
+.dfd .pname{font-weight:600}
+.dfd .storebg{fill:var(--surface)}
+.dfd .store{fill:none;stroke:var(--ink);stroke-width:1.4}
+.dfd .sid{font-family:var(--mono);font-size:12px;font-weight:500}
+.dfd .ename{font-family:var(--display);font-weight:600;font-size:14px}
+.dfd .esub{fill:var(--muted);font-size:11.5px}
+.dfd .arrowhead{fill:var(--ink)}
+figcaption{font-size:14px;color:var(--muted);max-width:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{display:inline-block;width:22px;height:14px;border:1.5px solid var(--ink);border-radius:2px}
+.sw.p{border-radius:5px;border-color:var(--student)}
+.sw.st{border-right:none;border-radius:0}
+
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:640px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font-family:var(--display);font-weight:600;font-size:13.5px;letter-spacing:.02em;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:none}
+td.num{font-family:var(--mono);white-space:nowrap}
+td.num.s{color:var(--student)} td.num.g{color:var(--guard)} td.num.a{color:var(--admin)}
+
+.stores{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.store-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.store-card h3{display:flex;gap:10px;align-items:baseline}
+.store-card h3 .mono{color:var(--muted);font-weight:500}
+.fields{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+.fields li{display:grid;grid-template-columns:minmax(110px,40%) 1fr;gap:10px;padding:5px 0;border-top:1px dashed var(--line);font-size:14px}
+.fields li:first-child{border-top:none}
+.fields code{color:var(--ink)}
+.fields span{color:var(--muted)}
+
+.risks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.risks li{display:grid;grid-template-columns:1fr;gap:4px;padding:14px 18px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:6px}
+.risks b{font-weight:600}
+.risks span{color:var(--muted);font-size:14.5px}
+
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.member{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.member .who{font-family:var(--display);font-weight:700;font-size:20px}
+.member .owns{display:flex;flex-wrap:wrap;gap:6px}
+.member .owns span{font-family:var(--mono);font-size:12px;padding:1px 8px;border-radius:4px;background:var(--bg);border:1px solid var(--line)}
+.member ul{margin:0;padding-left:1.1em;font-size:14.5px;display:flex;flex-direction:column;gap:3px}
+.member .side{font-size:13px;color:var(--muted)}
+.note{font-size:14.5px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:12px 16px;max-width:none}
+
+.steps{margin:0;padding:0;list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:0}
+.steps li{counter-increment:st;display:grid;grid-template-columns:44px 1fr;gap:14px;padding:16px 0;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:none}
+.steps li::before{content:counter(st);font-family:var(--display);font-weight:700;font-size:22px;line-height:1.2;color:var(--student)}
+.steps h3{margin-bottom:4px}
+.steps p{color:var(--muted);font-size:14.5px}
+.steps .when{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:8px;font-weight:400}
+
+.qs{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.qs li::marker{color:var(--guard)}
+@media (max-width:560px){ body{font-size:15px} .lane,.member,.store-card{padding:16px} }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">เอกสารออกแบบระบบ · ฉบับที่ 2 · ยังไม่รวม UX/UI</div>
+  <h1>ระบบยืมจักรยานหอใน</h1>
+  <p class="lede">นิสิตยืมเองผ่านแอปด้วยการสแกน QR และคืนที่ป้อมยาม ซึ่งมีโปรแกรมให้ป้อมยามใช้ตรวจสอบ</p>
+  <div class="roles">
+    <span class="chip"><span class="dot s"></span>นิสิตหอใน ยืมผ่านแอป</span>
+    <span class="chip"><span class="dot g"></span>เจ้าหน้าที่ป้อมยาม รับคืนและตรวจสอบ</span>
+    <span class="chip"><span class="dot a"></span>ผู้ดูแลระบบ ดูแลข้อมูลพื้นฐาน</span>
+  </div>
+</header>
+
+<section>
+  <div class="sec-head">
+    <h2>Flow การยืม-คืน</h2>
+    <p>ตอนยืมไม่มีเจ้าหน้าที่อยู่ด้วย ระบบจึงต้องเช็คสิทธิ์ให้เอง ส่วนตอนคืน ป้อมยามเป็นคนยืนยันทุกครั้ง</p>
+  </div>
+  <div class="lanes">
+    <div class="lane s">
+      <h3>ขายืม<span>นิสิตทำเองทั้งหมด</span></h3>
+      <ol>
+        <li>เปิดแอป ดูว่าคันไหนว่าง<span class="tag">2.0</span></li>
+        <li>เดินไปที่คันนั้น แล้วสแกน QR บนตัวจักรยาน<span class="tag">3.0</span></li>
+        <li>ยืนยันข้อมูลการยืม: ชื่อ รหัสนิสิต วันยืม (ระบบดึงจากบัญชีให้อัตโนมัติ กำหนดคืนเป็น 21.00 น. ของวันนั้น)</li>
+        <li>ระบบเช็คว่าเป็นนิสิตหอในจริง และไม่มีคันที่ยืมค้างอยู่ จากนั้นแสดง<b>รหัสล็อกล้อ</b></li>
+        <li>ใช้รหัสปลดล็อก แล้วปั่นได้เลย แอปจะนับถอยหลังและเตือนก่อน 21.00 น.<span class="tag">4.0</span></li>
+      </ol>
+    </div>
+    <div class="lane g">
+      <h3>ขาคืน<span>ผ่านป้อมยาม</span></h3>
+      <ol>
+        <li>นิสิตปั่นมาจอดที่ป้อมยาม</li>
+        <li>ป้อมยามสแกน QR หรือพิมพ์เลขคัน แล้วระบบแสดงว่าใครยืม ยืมตั้งแต่กี่โมง<span class="tag">5.0</span></li>
+        <li>ป้อมยามตรวจสภาพ แล้วเลือก <b>ปกติ</b> หรือ <b>ชำรุด</b> (ถ้าชำรุดให้ใส่หมายเหตุ)</li>
+        <li>กด "รับคืน" ระบบจะบันทึกเวลาคืน และตั้งสถานะจักรยานกลับเป็น "ว่าง" หรือ "ชำรุด"</li>
+        <li>นิสิตได้รับแจ้งว่าคืนเรียบร้อยแล้ว และรหัสล็อกจะหายไปจากแอป</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>สิ่งที่โปรแกรมป้อมยามต้องแสดง</h2>
+    <p>นี่คือรายการข้อมูลที่ต้องมี ยังไม่ใช่หน้าจอ ทั้งหมดอยู่ใน process 5.0 และ 6.0</p>
+  </div>
+  <ul class="needs">
+    <li><b>ตัวเลขสรุป</b><span>จำนวนทั้งหมด / ว่าง / กำลังถูกใช้ / ชำรุด / เกินเวลา</span></li>
+    <li><b>สถานะทุกคัน</b><span>เลขคัน, สถานะ, ใครกำลังใช้ (ชื่อ รหัส ห้อง เบอร์)</span></li>
+    <li><b>เวลา</b><span>ยืมตอนไหน กำหนดคืนตอนไหน และคืนจริงตอนไหน</span></li>
+    <li><b>ค้นหาด้วยรหัสนิสิต</b><span>ประวัติว่ายืมคันไหน ยืมและคืนเมื่อไร คืนสายหรือไม่</span></li>
+    <li><b>รับคืน</b><span>สแกนหรือพิมพ์เลขคัน, ดูผู้ยืม, ติ๊กผลตรวจ แล้วยืนยัน</span></li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>DFD Level 0 · Context Diagram</h2>
+    <p>มองทั้งระบบเป็น process เดียว แล้วดูว่ามีข้อมูลอะไรไหลเข้าออกระหว่างระบบกับผู้ใช้แต่ละกลุ่ม</p>
+  </div>
+  <figure>
+    <div class="scroll">
+      <svg class="dfd l0" viewBox="0 0 1000 530" role="img" aria-label="Context diagram: นิสิตหอใน เจ้าหน้าที่ป้อมยาม และผู้ดูแลระบบ ส่งและรับข้อมูลกับระบบยืม-คืนจักรยานหอใน">
+        <defs>
+          <marker id="ah0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path class="arrowhead" d="M0,0 L10,5 L0,10 z"/>
+          </marker>
+        </defs>
+
+        <!-- entities -->
+        <rect class="ent s" x="20" y="110" width="140" height="260"/>
+        <text class="ename" x="90" y="236" text-anchor="middle">นิสิตหอใน</text>
+        <text class="esub" x="90" y="256" text-anchor="middle">ผู้ยืม</text>
+
+        <rect class="ent g" x="840" y="110" width="140" height="260"/>
+        <text class="ename" x="910" y="236" text-anchor="middle">เจ้าหน้าที่</text>
+        <text class="ename" x="910" y="256" text-anchor="middle">ป้อมยาม</text>
+
+        <rect class="ent a" x="410" y="455" width="180" height="56"/>
+        <text class="ename" x="500" y="480" text-anchor="middle">ผู้ดูแลระบบ</text>
+        <text class="esub" x="500" y="499" text-anchor="middle">(กองหอพัก)</text>
+
+        <!-- process 0 -->
+        <rect class="proc a-stroke" x="400" y="100" width="200" height="280" rx="14"/>
+        <line class="a-stroke" x1="400" y1="132" x2="600" y2="132" stroke-width="1.8"/>
+        <text class="pnum a" x="500" y="122" text-anchor="middle">0</text>
+        <text class="pname" x="500" y="236" text-anchor="middle" font-size="15">ระบบยืม-คืน</text>
+        <text class="pname" x="500" y="258" text-anchor="middle" font-size="15">จักรยานหอใน</text>
+
+        <!-- student flows -->
+        <line class="fl" x1="160" y1="135" x2="398" y2="135" marker-end="url(#ah0)"/>
+        <text class="lbl" x="280" y="128" text-anchor="middle">ข้อมูลล็อกอิน</text>
+        <line class="fl" x1="160" y1="175" x2="398" y2="175" marker-end="url(#ah0)"/>
+        <text class="lbl" x="280" y="168" text-anchor="middle">สแกน QR + ข้อมูลการยืม</text>
+        <line class="fl" x1="400" y1="215" x2="162" y2="215" marker-end="url(#ah0)"/>
+        <text class="lbl" x="280" y="208" text-anchor="middle">ผลยืนยันหอใน</text>
+        <line class="fl" x1="400" y1="255" x2="162" y2="255" marker-end="url(#ah0)"/>
+        <text class="lbl" x="280" y="248" text-anchor="middle">รายการจักรยานว่าง</text>
+        <line class="fl" x1="400" y1="295" x2="162" y2="295" marker-end="url(#ah0)"/>
+        <text class="lbl" x="280" y="288" text-anchor="middle">รหัสล็อกล้อ + เวลาคืน</text>
+        <line class="fl" x1="400" y1="335" x2="162" y2="335" marker-end="url(#ah0)"/>
+        <text class="lbl" x="280" y="328" text-anchor="middle">แจ้งเตือนก่อน 21.00 น.</text>
+
+        <!-- guard flows -->
+        <line class="fl" x1="840" y1="135" x2="602" y2="135" marker-end="url(#ah0)"/>
+        <text class="lbl" x="720" y="128" text-anchor="middle">เลขจักรยานที่รับคืน</text>
+        <line class="fl" x1="840" y1="175" x2="602" y2="175" marker-end="url(#ah0)"/>
+        <text class="lbl" x="720" y="168" text-anchor="middle">ผลตรวจสภาพ</text>
+        <line class="fl" x1="840" y1="215" x2="602" y2="215" marker-end="url(#ah0)"/>
+        <text class="lbl" x="720" y="208" text-anchor="middle">รหัสนิสิตที่ค้นหา</text>
+        <line class="fl" x1="600" y1="255" x2="838" y2="255" marker-end="url(#ah0)"/>
+        <text class="lbl" x="720" y="248" text-anchor="middle">สถานะจักรยานทุกคัน</text>
+        <line class="fl" x1="600" y1="295" x2="838" y2="295" marker-end="url(#ah0)"/>
+        <text class="lbl" x="720" y="288" text-anchor="middle">ผู้ยืม / เวลายืม-คืน</text>
+        <line class="fl" x1="600" y1="335" x2="838" y2="335" marker-end="url(#ah0)"/>
+        <text class="lbl" x="720" y="328" text-anchor="middle">ประวัติตามรหัสนิสิต</text>
+
+        <!-- admin flows -->
+        <line class="fl" x1="470" y1="455" x2="470" y2="382" marker-end="url(#ah0)"/>
+        <text class="lbl" x="460" y="412" text-anchor="end">รายชื่อนิสิตหอใน /</text>
+        <text class="lbl" x="460" y="428" text-anchor="end">ข้อมูลจักรยาน</text>
+        <line class="fl" x1="530" y1="380" x2="530" y2="453" marker-end="url(#ah0)"/>
+        <text class="lbl" x="540" y="412" text-anchor="start">ผลการนำเข้า /</text>
+        <text class="lbl" x="540" y="428" text-anchor="start">รายงานสรุป</text>
+      </svg>
+    </div>
+    <figcaption>ระบบมีผู้ใช้ภายนอก 3 กลุ่ม นิสิตใช้ฝั่งยืม ป้อมยามใช้ฝั่งรับคืนและตรวจสอบ ส่วนผู้ดูแลระบบนำเข้ารายชื่อหอในและข้อมูลจักรยาน</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>DFD Level 1</h2>
+    <p>แตกระบบออกเป็น 7 process และ 3 data store ฝั่งซ้ายคือ process ของนิสิต ฝั่งขวาคือ process ของป้อมยามและผู้ดูแลระบบ ตรงกลางคือที่เก็บข้อมูล</p>
+  </div>
+  <figure>
+    <div class="legend">
+      <span><i class="sw"></i>ผู้ใช้ภายนอก (External entity)</span>
+      <span><i class="sw p"></i>Process (สีบอกว่าใครใช้)</span>
+      <span><i class="sw st"></i>Data store (D2 วาดซ้ำ 2 ที่ เส้นคู่ด้านซ้าย = ตัวซ้ำ)</span>
+    </div>
+    <div class="scroll">
+      <svg class="dfd l1" viewBox="0 0 1250 680" role="img" aria-label="DFD level 1: 7 process ได้แก่ ยืนยันตัวตน แสดงจักรยานว่าง ยืมจักรยาน แจ้งเตือน รับคืนและตรวจสภาพ ติดตามค้นหา และจัดการข้อมูลพื้นฐาน เชื่อมกับ data store ข้อมูลนิสิตหอใน ข้อมูลจักรยาน และข้อมูลการยืม-คืน">
+        <defs>
+          <marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path class="arrowhead" d="M0,0 L10,5 L0,10 z"/>
+          </marker>
+        </defs>
+
+        <!-- external entities -->
+        <rect class="ent s" x="10" y="45" width="120" height="610"/>
+        <text class="ename" x="70" y="345" text-anchor="middle">นิสิตหอใน</text>
+        <text class="esub" x="70" y="364" text-anchor="middle">(แอปนิสิต)</text>
+
+        <rect class="ent a" x="1120" y="50" width="120" height="80"/>
+        <text class="ename" x="1180" y="87" text-anchor="middle">ผู้ดูแลระบบ</text>
+        <text class="esub" x="1180" y="105" text-anchor="middle">(กองหอพัก)</text>
+
+        <rect class="ent g" x="1120" y="375" width="120" height="280"/>
+        <text class="ename" x="1180" y="507" text-anchor="middle">เจ้าหน้าที่</text>
+        <text class="ename" x="1180" y="526" text-anchor="middle">ป้อมยาม</text>
+
+        <!-- processes: student side -->
+        <rect class="proc s-stroke" x="250" y="45" width="160" height="90" rx="10"/>
+        <line class="s-stroke" x1="250" y1="69" x2="410" y2="69" stroke-width="1.8"/>
+        <text class="pnum s" x="330" y="62" text-anchor="middle">1.0</text>
+        <text class="pname" x="330" y="96" text-anchor="middle">ยืนยันตัวตน</text>
+        <text class="pname" x="330" y="114" text-anchor="middle">นิสิตหอใน</text>
+
+        <rect class="proc s-stroke" x="250" y="205" width="160" height="90" rx="10"/>
+        <line class="s-stroke" x1="250" y1="229" x2="410" y2="229" stroke-width="1.8"/>
+        <text class="pnum s" x="330" y="222" text-anchor="middle">2.0</text>
+        <text class="pname" x="330" y="266" text-anchor="middle">แสดงจักรยานว่าง</text>
+
+        <rect class="proc s-stroke" x="250" y="375" width="160" height="90" rx="10"/>
+        <line class="s-stroke" x1="250" y1="399" x2="410" y2="399" stroke-width="1.8"/>
+        <text class="pnum s" x="330" y="392" text-anchor="middle">3.0</text>
+        <text class="pname" x="330" y="426" text-anchor="middle">ยืมจักรยาน</text>
+        <text class="pname" x="330" y="444" text-anchor="middle">(สแกน QR)</text>
+
+        <rect class="proc s-stroke" x="250" y="565" width="160" height="90" rx="10"/>
+        <line class="s-stroke" x1="250" y1="589" x2="410" y2="589" stroke-width="1.8"/>
+        <text class="pnum s" x="330" y="582" text-anchor="middle">4.0</text>
+        <text class="pname" x="330" y="616" text-anchor="middle">แจ้งเตือน</text>
+        <text class="pname" x="330" y="634" text-anchor="middle">เวลาคืน</text>
+
+        <!-- processes: guard / admin side -->
+        <rect class="proc a-stroke" x="840" y="45" width="160" height="90" rx="10"/>
+        <line class="a-stroke" x1="840" y1="69" x2="1000" y2="69" stroke-width="1.8"/>
+        <text class="pnum a" x="920" y="62" text-anchor="middle">7.0</text>
+        <text class="pname" x="920" y="96" text-anchor="middle">จัดการข้อมูล</text>
+        <text class="pname" x="920" y="114" text-anchor="middle">พื้นฐาน</text>
+
+        <rect class="proc g-stroke" x="840" y="375" width="160" height="90" rx="10"/>
+        <line class="g-stroke" x1="840" y1="399" x2="1000" y2="399" stroke-width="1.8"/>
+        <text class="pnum g" x="920" y="392" text-anchor="middle">5.0</text>
+        <text class="pname" x="920" y="426" text-anchor="middle">รับคืน +</text>
+        <text class="pname" x="920" y="444" text-anchor="middle">ตรวจสภาพ</text>
+
+        <rect class="proc g-stroke" x="840" y="565" width="160" height="90" rx="10"/>
+        <line class="g-stroke" x1="840" y1="589" x2="1000" y2="589" stroke-width="1.8"/>
+        <text class="pnum g" x="920" y="582" text-anchor="middle">6.0</text>
+        <text class="pname" x="920" y="616" text-anchor="middle">ติดตาม /</text>
+        <text class="pname" x="920" y="634" text-anchor="middle">ค้นหาการยืม</text>
+
+        <!-- data stores -->
+        <rect class="storebg" x="540" y="68" width="170" height="44"/>
+        <path class="store" d="M710,68 H540 V112 H710 M580,68 V112"/>
+        <text class="sid" x="560" y="95" text-anchor="middle">D1</text>
+        <text x="592" y="95">ข้อมูลนิสิตหอใน</text>
+
+        <rect class="storebg" x="540" y="228" width="170" height="44"/>
+        <path class="store" d="M710,228 H540 V272 H710 M580,228 V272"/>
+        <text class="sid" x="560" y="255" text-anchor="middle">D2</text>
+        <text x="592" y="255">ข้อมูลจักรยาน</text>
+
+        <rect class="storebg" x="540" y="398" width="170" height="44"/>
+        <path class="store" d="M710,398 H540 V442 H710 M580,398 V442"/>
+        <text class="sid" x="560" y="425" text-anchor="middle">D3</text>
+        <text x="592" y="425">ข้อมูลการยืม-คืน</text>
+
+        <rect class="storebg" x="540" y="588" width="170" height="44"/>
+        <path class="store" d="M710,588 H540 V632 H710 M580,588 V632 M546,588 V632"/>
+        <text class="sid" x="563" y="615" text-anchor="middle">D2</text>
+        <text x="592" y="615">ข้อมูลจักรยาน</text>
+
+        <!-- row 1: P1 / D1 / P7 -->
+        <line class="fl" x1="130" y1="78" x2="248" y2="78" marker-end="url(#ah1)"/>
+        <text class="lbl" x="190" y="71" text-anchor="middle">ข้อมูลล็อกอิน</text>
+        <line class="fl" x1="250" y1="104" x2="132" y2="104" marker-end="url(#ah1)"/>
+        <text class="lbl" x="190" y="121" text-anchor="middle">ผลยืนยันหอใน</text>
+        <line class="fl" x1="540" y1="80" x2="412" y2="80" marker-end="url(#ah1)"/>
+        <text class="lbl" x="475" y="73" text-anchor="middle">รายชื่อหอใน</text>
+        <line class="fl" x1="410" y1="102" x2="538" y2="102" marker-end="url(#ah1)"/>
+        <text class="lbl" x="475" y="119" text-anchor="middle">บัญชีที่ยืนยัน</text>
+        <line class="fl" x1="840" y1="90" x2="712" y2="90" marker-end="url(#ah1)"/>
+        <text class="lbl" x="775" y="83" text-anchor="middle">รายชื่อหอใน</text>
+        <line class="fl" x1="1120" y1="78" x2="1002" y2="78" marker-end="url(#ah1)"/>
+        <text class="lbl" x="1060" y="71" text-anchor="middle">รายชื่อ + จักรยาน</text>
+        <line class="fl" x1="1000" y1="104" x2="1118" y2="104" marker-end="url(#ah1)"/>
+        <text class="lbl" x="1060" y="121" text-anchor="middle">ผลการนำเข้า</text>
+        <!-- P7 -> D2 -->
+        <line class="fl" x1="870" y1="135" x2="692" y2="226" marker-end="url(#ah1)"/>
+        <text class="lbl" x="814" y="182">ข้อมูลจักรยาน,</text>
+        <text class="lbl" x="814" y="197">รหัสล็อก, ผลซ่อม</text>
+
+        <!-- row 2: P2 / D2 -->
+        <line class="fl" x1="130" y1="238" x2="248" y2="238" marker-end="url(#ah1)"/>
+        <text class="lbl" x="190" y="231" text-anchor="middle">เปิดดูจุดยืม</text>
+        <line class="fl" x1="250" y1="264" x2="132" y2="264" marker-end="url(#ah1)"/>
+        <text class="lbl" x="190" y="281" text-anchor="middle">จักรยานที่ว่าง</text>
+        <line class="fl" x1="540" y1="250" x2="412" y2="250" marker-end="url(#ah1)"/>
+        <text class="lbl" x="475" y="243" text-anchor="middle">สถานะจักรยาน</text>
+
+        <!-- row 3: P3 / D3 / P5 -->
+        <line class="fl" x1="130" y1="408" x2="248" y2="408" marker-end="url(#ah1)"/>
+        <text class="lbl" x="190" y="386" text-anchor="middle">สแกน QR +</text>
+        <text class="lbl" x="190" y="401" text-anchor="middle">ชื่อ รหัส วันยืม</text>
+        <line class="fl" x1="250" y1="434" x2="132" y2="434" marker-end="url(#ah1)"/>
+        <text class="lbl" x="190" y="451" text-anchor="middle">รหัสล็อก +</text>
+        <text class="lbl" x="190" y="466" text-anchor="middle">เวลาคืน</text>
+        <line class="fl" x1="410" y1="420" x2="538" y2="420" marker-end="url(#ah1)"/>
+        <text class="lbl" x="475" y="413" text-anchor="middle">บันทึกการยืม</text>
+        <!-- D2 <-> P3 -->
+        <line class="fl" x1="560" y1="272" x2="391" y2="373" marker-end="url(#ah1)"/>
+        <text class="lbl" x="468" y="318" text-anchor="end">รหัสล็อก</text>
+        <line class="fl" x1="410" y1="390" x2="598" y2="274" marker-end="url(#ah1)"/>
+        <text class="lbl" x="516" y="352">สถานะ: ถูกยืม</text>
+
+        <line class="fl" x1="710" y1="408" x2="838" y2="408" marker-end="url(#ah1)"/>
+        <text class="lbl" x="775" y="401" text-anchor="middle">การยืมที่ค้าง</text>
+        <line class="fl" x1="840" y1="434" x2="712" y2="434" marker-end="url(#ah1)"/>
+        <text class="lbl" x="775" y="451" text-anchor="middle">เวลาคืน + ผลตรวจ</text>
+        <!-- P5 -> D2 -->
+        <line class="fl" x1="862" y1="375" x2="692" y2="274" marker-end="url(#ah1)"/>
+        <text class="lbl" x="784" y="322">สถานะ: ว่าง / ชำรุด</text>
+        <line class="fl" x1="1120" y1="408" x2="1002" y2="408" marker-end="url(#ah1)"/>
+        <text class="lbl" x="1060" y="386" text-anchor="middle">เลขจักรยาน</text>
+        <text class="lbl" x="1060" y="401" text-anchor="middle">+ ผลตรวจสภาพ</text>
+        <line class="fl" x1="1000" y1="434" x2="1118" y2="434" marker-end="url(#ah1)"/>
+        <text class="lbl" x="1060" y="451" text-anchor="middle">ข้อมูลผู้ยืม</text>
+
+        <!-- row 4: P4 / D2' / P6 -->
+        <line class="fl" x1="560" y1="442" x2="396" y2="563" marker-end="url(#ah1)"/>
+        <text class="lbl" x="470" y="506" text-anchor="end">การยืมใกล้ครบเวลา</text>
+        <line class="fl" x1="250" y1="610" x2="132" y2="610" marker-end="url(#ah1)"/>
+        <text class="lbl" x="190" y="588" text-anchor="middle">แจ้งเตือน</text>
+        <text class="lbl" x="190" y="603" text-anchor="middle">ก่อน 21.00 น.</text>
+
+        <line class="fl" x1="690" y1="442" x2="858" y2="563" marker-end="url(#ah1)"/>
+        <text class="lbl" x="780" y="500">ประวัติยืม-คืน</text>
+        <line class="fl" x1="710" y1="610" x2="838" y2="610" marker-end="url(#ah1)"/>
+        <text class="lbl" x="775" y="603" text-anchor="middle">สถานะทุกคัน</text>
+        <line class="fl" x1="1120" y1="598" x2="1002" y2="598" marker-end="url(#ah1)"/>
+        <text class="lbl" x="1060" y="591" text-anchor="middle">รหัสนิสิตที่ค้นหา</text>
+        <line class="fl" x1="1000" y1="624" x2="1118" y2="624" marker-end="url(#ah1)"/>
+        <text class="lbl" x="1060" y="641" text-anchor="middle">สถานะ, ผู้ยืม,</text>
+        <text class="lbl" x="1060" y="656" text-anchor="middle">เวลายืม-คืน</text>
+      </svg>
+    </div>
+    <figcaption>ข้อมูลทุกเส้นมาบรรจบกันที่ D2 และ D3 ตอนยืม process 3.0 เขียนสถานะ "ถูกยืม" ลง D2 ตอนรับคืน process 5.0 เขียนกลับเป็น "ว่าง" หรือ "ชำรุด" ส่วนป้อมยามอ่านข้อมูลทั้งหมดผ่าน 6.0</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>คำอธิบาย Process</h2>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>#</th><th>Process</th><th>ทำอะไร</th><th>อ่าน / เขียน</th></tr></thead>
+      <tbody>
+        <tr><td class="num s">1.0</td><td>ยืนยันตัวตนนิสิตหอใน</td><td>ล็อกอินด้วยบัญชีมหาลัย แล้วเทียบรหัสนิสิตกับรายชื่อหอในของเทอมนี้ ถ้าไม่อยู่ในรายชื่อจะยืมไม่ได้</td><td>อ่าน D1 / เขียน D1</td></tr>
+        <tr><td class="num s">2.0</td><td>แสดงจักรยานว่าง</td><td>แสดงจำนวนและเลขคันที่ว่างอยู่ตอนนี้ ตัวเลขอัปเดตทันทีที่มีการยืมหรือคืน</td><td>อ่าน D2</td></tr>
+        <tr><td class="num s">3.0</td><td>ยืมจักรยาน</td><td>รับ QR ที่สแกนมา เช็คสิทธิ์ (ยืนยันหอในแล้ว และไม่มีคันที่ยืมค้าง) สร้างรายการยืม ตั้งกำหนดคืน 21.00 น. แล้วส่งรหัสล็อกให้นิสิต</td><td>อ่าน D2 / เขียน D2, D3</td></tr>
+        <tr><td class="num s">4.0</td><td>แจ้งเตือนเวลาคืน</td><td>ระบบรันเองทุก 5 นาที เตือนตอน 20.30 และ 20.50 น. เลยเวลาแล้วตั้งสถานะ "เกินเวลา" และนับจำนวนครั้งที่คืนสาย</td><td>อ่าน D3 / เขียน D3</td></tr>
+        <tr><td class="num g">5.0</td><td>รับคืน + ตรวจสภาพ</td><td>ป้อมยามสแกนหรือพิมพ์เลขคัน ดูข้อมูลผู้ยืม บันทึกผลตรวจและเวลาคืน แล้วเปลี่ยนสถานะจักรยาน</td><td>อ่าน D3 / เขียน D2, D3</td></tr>
+        <tr><td class="num g">6.0</td><td>ติดตาม / ค้นหาการยืม</td><td>แสดงตัวเลขสรุปและสถานะทุกคัน รายการที่เกินเวลา และค้นประวัติด้วยรหัสนิสิต</td><td>อ่าน D2, D3</td></tr>
+        <tr><td class="num a">7.0</td><td>จัดการข้อมูลพื้นฐาน</td><td>นำเข้ารายชื่อหอใน (CSV) ทุกเทอม เพิ่มหรือแก้ข้อมูลจักรยาน รหัสล็อก และปิดงานซ่อม</td><td>เขียน D1, D2</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>Data Dictionary</h2>
+    <p>ทุกคนต้องใช้ชื่อฟิลด์ชุดเดียวกัน ล็อกตรงนี้ให้ได้ก่อนเริ่มเขียนโค้ด</p>
+  </div>
+  <div class="stores">
+    <div class="store-card">
+      <h3><span class="mono">D1</span>ข้อมูลนิสิตหอใน</h3>
+      <ul class="fields">
+        <li><code>student_id</code><span>รหัสนิสิต (PK)</span></li>
+        <li><code>full_name</code><span>ชื่อ-นามสกุล</span></li>
+        <li><code>building, room</code><span>อาคาร, ห้อง</span></li>
+        <li><code>phone, email</code><span>เบอร์โทร, อีเมลมหาลัย</span></li>
+        <li><code>semester</code><span>ภาคเรียนที่มีสิทธิ์</span></li>
+        <li><code>verified</code><span>ยืนยันหอในแล้วหรือยัง</span></li>
+        <li><code>late_count</code><span>จำนวนครั้งที่คืนสาย</span></li>
+      </ul>
+    </div>
+    <div class="store-card">
+      <h3><span class="mono">D2</span>ข้อมูลจักรยาน</h3>
+      <ul class="fields">
+        <li><code>bike_no</code><span>หมายเลขจักรยาน (PK)</span></li>
+        <li><code>qr_code</code><span>ค่าใน QR (เก็บแค่เลขคัน)</span></li>
+        <li><code>lock_code</code><span>รหัสล็อกล้อ</span></li>
+        <li><code>station</code><span>จุดจอด</span></li>
+        <li><code>status</code><span>ว่าง / ถูกยืม / ชำรุด</span></li>
+        <li><code>note</code><span>หมายเหตุความเสียหาย</span></li>
+      </ul>
+    </div>
+    <div class="store-card">
+      <h3><span class="mono">D3</span>ข้อมูลการยืม-คืน</h3>
+      <ul class="fields">
+        <li><code>loan_id</code><span>เลขรายการ (PK)</span></li>
+        <li><code>student_id</code><span>ผู้ยืม (FK → D1)</span></li>
+        <li><code>bike_no</code><span>คันที่ยืม (FK → D2)</span></li>
+        <li><code>borrowed_at</code><span>เวลายืม</span></li>
+        <li><code>due_at</code><span>กำหนดคืน (21.00 น.)</span></li>
+        <li><code>returned_at</code><span>เวลาคืนจริง</span></li>
+        <li><code>received_by</code><span>ป้อมยามที่รับคืน</span></li>
+        <li><code>condition</code><span>ผลตรวจ: ปกติ / ชำรุด</span></li>
+        <li><code>status</code><span>กำลังยืม / เกินเวลา / คืนแล้ว</span></li>
+        <li><code>is_late</code><span>คืนสายหรือไม่</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>จุดที่ flow ใหม่ต้องระวัง</h2>
+    <p>พอตัดเจ้าหน้าที่ออกจากขั้นตอนยืม จะมีช่องโหว่เพิ่มขึ้น 4 จุดนี้</p>
+  </div>
+  <ul class="risks">
+    <li><b>ห้ามให้นิสิตพิมพ์ชื่อและรหัสเอง</b><span>ถ้าให้พิมพ์เอง ใครก็ใส่รหัสเพื่อนได้ ปัญหา "เช็คไม่ได้ว่าเป็นหอในจริงไหม" จะกลับมา ควรดึงข้อมูลจากบัญชีที่ล็อกอินและยืนยันหอในแล้ว (1.0) ให้นิสิตแค่กดยืนยัน</span></li>
+    <li><b>รหัสล็อกรั่ว</b><span>ทุกคนที่เคยยืมคันนั้นจะรู้รหัส แล้ววันหลังเอาไปปั่นได้โดยไม่ผ่านแอป ควรให้ป้อมยามเปลี่ยนรหัสเป็นระยะ หรือเปลี่ยนทุกครั้งที่รับคืน แล้วอัปเดตในระบบ (ต้องถามว่าทำได้จริงไหม)</span></li>
+    <li><b>ไม่มีการตรวจก่อนยืม</b><span>ใช้ผลตรวจตอนรับคืนของคนก่อนหน้าแทน คันที่ขึ้นว่า "ว่าง" คือผ่านป้อมยามมาแล้ว และให้นิสิตกด "แจ้งปัญหา" ได้ใน 5 นาทีแรก จะได้ไม่โดนโทษเรื่องความเสียหายที่ตัวเองไม่ได้ทำ</span></li>
+    <li><b>จอดทิ้งโดยไม่ผ่านป้อมยาม</b><span>รายการยืมจะค้างอยู่ พอเลย 21.00 น. ระบบขึ้นสถานะ "เกินเวลา" ทั้งในแอปนิสิตและในโปรแกรมป้อมยาม ป้อมยามจึงเห็นทันทีว่าคันไหนยังไม่กลับมา</span></li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>แบ่งงาน 4 คน</h2>
+    <p>แบ่งตาม process ใน DFD แต่ละคนรับผิดชอบงานของตัวเองตั้งแต่ API ไปจนถึงหน้าจอ ส่วน D2 และ D3 ใช้ร่วมกัน ต้องตกลงโครงสร้างด้วยกันก่อน</p>
+  </div>
+  <div class="team">
+    <div class="member">
+      <div class="who">คนที่ 1</div>
+      <div class="owns"><span>1.0</span><span>7.0</span><span>D1</span><span>DB schema</span></div>
+      <ul>
+        <li>ล็อกอิน + ยืนยันหอใน</li>
+        <li>นำเข้ารายชื่อหอในจาก CSV</li>
+        <li>หน้าผู้ดูแล: เพิ่มจักรยาน รหัสล็อก ปิดงานซ่อม</li>
+        <li>ตั้ง database กลางให้ทีม</li>
+      </ul>
+      <div class="side">ต้องเสร็จก่อนเพื่อน เพราะทุกคนใช้บัญชีและ schema ของคนนี้</div>
+    </div>
+    <div class="member">
+      <div class="who">คนที่ 2</div>
+      <div class="owns"><span>2.0</span><span>3.0</span></div>
+      <ul>
+        <li>แสดงจักรยานว่างแบบเรียลไทม์</li>
+        <li>สแกน QR แล้วสร้างรายการยืม</li>
+        <li>กฎการยืม (ยืมได้ครั้งละ 1 คัน, ต้องเป็นหอใน)</li>
+        <li>แสดงรหัสล็อก + นับถอยหลัง</li>
+      </ul>
+      <div class="side">งานหลักฝั่งแอปนิสิต</div>
+    </div>
+    <div class="member">
+      <div class="who">คนที่ 3</div>
+      <div class="owns"><span>5.0</span><span>6.0</span></div>
+      <ul>
+        <li>โปรแกรมป้อมยาม: รับคืน + ตรวจสภาพ</li>
+        <li>ตัวเลขสรุป + สถานะทุกคัน</li>
+        <li>ค้นหาประวัติด้วยรหัสนิสิต</li>
+        <li>รายการที่เกินเวลา</li>
+      </ul>
+      <div class="side">งานหลักฝั่งป้อมยาม</div>
+    </div>
+    <div class="member">
+      <div class="who">คนที่ 4</div>
+      <div class="owns"><span>4.0</span><span>ทดสอบ</span><span>เอกสาร</span></div>
+      <ul>
+        <li>ระบบตั้งเวลาเตือน 20.30 / 20.50 น.</li>
+        <li>ตั้งสถานะเกินเวลา + นับครั้งที่คืนสาย</li>
+        <li>ทดสอบ flow ยืม→คืน ตั้งแต่ต้นจนจบ</li>
+        <li>ดูแล DFD, data dictionary และรายงาน</li>
+      </ul>
+      <div class="side">งานเขียนโค้ดเบากว่าเพื่อน เลยรับงานทดสอบและเอกสารด้วย</div>
+    </div>
+  </div>
+  <p class="note">ถ้าวิชานี้ไม่ต้องเขียนโค้ดจริง ใช้การแบ่งแบบเดิมได้ แค่เปลี่ยนงานจาก "ทำ API" เป็น "เขียน process specification และ flow ของ process ที่ตัวเองรับผิดชอบ"</p>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>เริ่มยังไง</h2>
+    <p>เป้าหมายแรกคือทำให้เส้นหลัก <b>สแกนยืม → ได้รหัส → ป้อมยามรับคืน</b> ใช้งานได้ครบก่อน ฟีเจอร์อื่นค่อยต่อทีหลัง</p>
+  </div>
+  <ol class="steps">
+    <li><div><h3>ตรวจ DFD กับ Data Dictionary ด้วยกันทั้งทีม<span class="when">2–3 วันแรก</span></h3><p>ไล่ดู DFD ทีละเส้นว่าตรงกับที่ทุกคนเข้าใจไหม แก้ชื่อฟิลด์ให้ลงตัว แล้วล็อกไว้ ต่อจากนั้นใครจะเปลี่ยนต้องบอกทั้งทีม</p></div></li>
+    <li><div><h3>กลับไปถามป้อมยามและเจ้าหน้าที่</h3><p>ใช้คำถามด้านล่าง คำตอบจะกำหนดว่ากฎในข้อ 3.0, 4.0 และ 5.0 เป็นแบบไหน</p></div></li>
+    <li><div><h3>เลือกเครื่องมือ + ตั้ง database กลาง</h3><p>คนที่ 1 สร้างตาราง D1–D3 ใส่ข้อมูลตัวอย่าง (จักรยาน 10 คัน นิสิต 20 คน) ให้คนอื่นใช้ทดสอบ ถ้าอยากเร็วใช้ Supabase หรือ Firebase ได้</p></div></li>
+    <li><div><h3>ทำเส้นหลักให้ใช้งานได้ครบ</h3><p>คนที่ 2 ทำยืม (3.0) คนที่ 3 ทำรับคืน (5.0) ระหว่างนี้ใช้บัญชีนิสิตจำลองไปก่อน ไม่ต้องรอระบบล็อกอินเสร็จ</p></div></li>
+    <li><div><h3>ต่อของจริงเข้าไป</h3><p>เปลี่ยนจากบัญชีจำลองเป็นล็อกอินและยืนยันหอในจริง (คนที่ 1) เพิ่มระบบแจ้งเตือนและเกินเวลา (คนที่ 4) และเพิ่มหน้าติดตาม/ค้นหา (คนที่ 3)</p></div></li>
+    <li><div><h3>ทดสอบที่ป้อมยามจริง</h3><p>ให้ป้อมยามลองรับคืนจริงสัก 1–2 คัน แล้วเก็บ feedback กลับมาปรับ ก่อนจะเริ่มทำ UX/UI แบบละเอียด</p></div></li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>คำถามที่ต้องถามก่อนล็อกสเปก</h2>
+  </div>
+  <ol class="qs">
+    <li>ขอรายชื่อนิสิตหอในได้จากใคร เป็นไฟล์แบบไหน และอัปเดตบ่อยแค่ไหน</li>
+    <li>ป้อมยามมีอุปกรณ์อะไรบ้าง (คอม / แท็บเล็ต / มือถือ) และมีกี่คนผลัดกันเข้ากะ</li>
+    <li>เปลี่ยนรหัสล็อกล้อได้บ่อยแค่ไหน และใครเป็นคนเปลี่ยน</li>
+    <li>ถ้ามาคืนหลัง 21.00 น. ป้อมยามยังรับคืนได้ไหม และคืนสายกี่ครั้งถึงจะโดนระงับสิทธิ์</li>
+    <li>ถ้าจักรยานชำรุด ใครเป็นคนซ่อม และใครเป็นคนกดให้กลับมาใช้งานได้</li>
+  </ol>
+</section>
+
+</div>
+
+</body></html>
