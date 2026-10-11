@@ -75,14 +75,14 @@ class FakeBorrowRepository implements BorrowRepository {
       _bikes[no] = BorrowBike(
         bikeNo: no,
         status: BikeAvailability.available,
-        station: 'ป้อมยาม',
+        station: 'ป้อมรปภ.',
       );
       _locks[no] = '${i.toString().padLeft(2, '0')}11';
     }
     _bikes['B02'] = const BorrowBike(
-        bikeNo: 'B02', status: BikeAvailability.borrowed, station: 'ป้อมยาม');
+        bikeNo: 'B02', status: BikeAvailability.borrowed, station: 'ป้อมรปภ.');
     _bikes['B05'] = const BorrowBike(
-        bikeNo: 'B05', status: BikeAvailability.broken, station: 'ป้อมยาม');
+        bikeNo: 'B05', status: BikeAvailability.broken, station: 'ป้อมรปภ.');
   }
 
   StudentProfile? profile;
@@ -115,7 +115,7 @@ class FakeBorrowRepository implements BorrowRepository {
     _controller.add(_snapshot);
   }
 
-  /// จำลองป้อมยามรับคืนรายการของเรา
+  /// จำลองป้อมรปภ.รับคืนรายการของเรา
   void returnMyLoan() {
     final loan = _myLoan;
     if (loan == null) return;

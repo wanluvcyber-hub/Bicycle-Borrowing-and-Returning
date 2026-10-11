@@ -9,7 +9,7 @@ import 'dashboard_page.dart';
 import 'history_page.dart';
 import 'return_page.dart';
 
-/// หน้าหลักของป้อมยาม (3 แท็บ) · คนที่ 1 เรียกใช้จาก router เมื่อล็อกอินเป็น guard
+/// หน้าหลักของป้อมรปภ. (3 แท็บ) · คนที่ 1 เรียกใช้จาก router เมื่อล็อกอินเป็น guard
 /// ไม่ส่ง [repository] = ใช้ Supabase จริง (ต้อง Supabase.initialize แล้ว)
 class GuardHomePage extends StatelessWidget {
   const GuardHomePage({super.key, this.repository, this.onSignOut});
@@ -50,7 +50,7 @@ class _GuardScaffoldState extends State<_GuardScaffold> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 16,
-        title: BrandTitle(subtitle: 'ป้อมยาม · ${_titles[_index]}'),
+        title: BrandTitle(subtitle: 'ป้อมรปภ. · ${_titles[_index]}'),
         actions: [
           if (_index == 0)
             IconButton(

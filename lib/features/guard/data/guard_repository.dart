@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'guard_error.dart';
 import 'guard_models.dart';
 
-/// จุดเดียวที่โปรแกรมป้อมยามคุยกับฐานข้อมูล (docs/database.md หัวข้อ 4.4, 4.5, 4.7)
+/// จุดเดียวที่โปรแกรมป้อมรปภ.คุยกับฐานข้อมูล (docs/database.md หัวข้อ 4.4, 4.5, 4.7)
 abstract class GuardRepository {
   /// จักรยานทั้งหมด พร้อมรายการยืมที่ค้างอยู่ของแต่ละคัน
   Future<List<GuardBike>> fetchBikes();
@@ -144,7 +144,7 @@ class FakeGuardRepository implements GuardRepository {
         'B${i.toString().padLeft(2, '0')}': GuardBike(
           bikeNo: 'B${i.toString().padLeft(2, '0')}',
           status: BikeStatus.available,
-          station: 'ป้อมยาม',
+          station: 'ป้อมรปภ.',
         ),
     };
     _students = {
@@ -159,7 +159,7 @@ class FakeGuardRepository implements GuardRepository {
     _bikes['B05'] = const GuardBike(
       bikeNo: 'B05',
       status: BikeStatus.broken,
-      station: 'ป้อมยาม',
+      station: 'ป้อมรปภ.',
       note: 'เบรกหลังเสีย',
     );
   }

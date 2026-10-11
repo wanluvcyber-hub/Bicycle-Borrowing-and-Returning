@@ -31,7 +31,7 @@
 | 10 | รับคืนชำรุด+หมายเหตุ · late_count=1 · is_late | `guard_provider_test` (คืนสาย+ชำรุด) | ⬜ |
 | 11 | admin ปิดงานซ่อม → B02 ว่าง | ไม่มีเทสต์อัตโนมัติ | ⬜ |
 | 12 | อีเมลนอกรายชื่อ → "ไม่พบสิทธิ์" ไม่ crash | `session_provider_test` (not_in_dorm_list) | ⬜ |
-| 13 | test01 เข้าเมนูป้อมยาม/แอดมิน ไม่ได้ | `session_provider_test` (redirect ตามบทบาท) | ⬜ |
+| 13 | test01 เข้าเมนูป้อมรปภ./แอดมิน ไม่ได้ | `session_provider_test` (redirect ตามบทบาท) | ⬜ |
 | 14 | ปิดเน็ตตอนกดยืม → ลองใหม่ ไม่ซ้ำ | `borrow_provider_test` (เน็ตหลุด 2 แบบ, กดรัว) | ⬜ |
 | 15 | เตือน 20.30/20.50 เด้งตามเวลา | `reminder_service_test`, `reminder_schedule_test` (เฉพาะ logic ตั้งเวลา) | ⬜ ต้องใช้ emulator/มือถือ |
 

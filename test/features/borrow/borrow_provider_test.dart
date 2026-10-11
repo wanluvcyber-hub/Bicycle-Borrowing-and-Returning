@@ -114,7 +114,7 @@ void main() {
     reopened.dispose();
   });
 
-  test('ป้อมยามรับคืนแล้ว การ์ดรายการค้างหายเอง', () async {
+  test('ป้อมรปภ.รับคืนแล้ว การ์ดรายการค้างหายเอง', () async {
     await provider.confirmBorrow('B01');
     repo.returnMyLoan();
     await pumpEventQueue();

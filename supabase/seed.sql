@@ -6,7 +6,7 @@
 
 -- จักรยาน 10 คัน: B01 ... B10 (qr_code = เลขคัน) รหัสล็อกทดสอบ 0111, 0222, ...
 insert into public.bikes (bike_no, qr_code, station)
-select 'B' || lpad(i::text, 2, '0'), 'B' || lpad(i::text, 2, '0'), 'ป้อมยามหอใน'
+select 'B' || lpad(i::text, 2, '0'), 'B' || lpad(i::text, 2, '0'), 'ป้อมรปภ.หอใน'
 from generate_series(1, 10) as i
 on conflict (bike_no) do nothing;
 
@@ -31,10 +31,10 @@ on conflict (student_id) do nothing;
 
 -- เจ้าหน้าที่ทดสอบ: จะมีผลก็ต่อเมื่อสร้างผู้ใช้ใน Authentication > Users ด้วยอีเมลเหล่านี้แล้ว
 -- (สร้างผู้ใช้เสร็จ แล้วรันไฟล์นี้อีกรอบ)
---   guard01@example.com  → ป้อมยาม
+--   guard01@example.com  → ป้อมรปภ.
 --   admin01@example.com  → ผู้ดูแลระบบ
 insert into public.staff (user_id, full_name, role)
-select id, 'ป้อมยามทดสอบ', 'guard' from auth.users where email = 'guard01@example.com'
+select id, 'ป้อมรปภ.ทดสอบ', 'guard' from auth.users where email = 'guard01@example.com'
 on conflict (user_id) do nothing;
 
 insert into public.staff (user_id, full_name, role)

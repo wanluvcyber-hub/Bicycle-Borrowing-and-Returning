@@ -73,7 +73,7 @@ class DemoLoanSource implements ActiveLoanSource {
     return ActiveLoan.fromJson(loan);
   }
 
-  /// เหมือนป้อมยามรับคืนแล้ว
+  /// เหมือนป้อมรปภ.รับคืนแล้ว
   void markReturned() => _write(null);
 }
 

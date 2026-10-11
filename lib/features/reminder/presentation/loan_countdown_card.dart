@@ -198,7 +198,7 @@ class _LoanCountdownCardState extends State<LoanCountdownCard> {
           if (phase == LoanPhase.overdue) ...[
             const SizedBox(height: 12),
             Text(
-              'กรุณาคืนจักรยานที่ป้อมยามโดยเร็ว',
+              'กรุณาคืนจักรยานที่ป้อมรปภ.โดยเร็ว',
               style: small?.copyWith(fontWeight: FontWeight.w700),
             ),
           ],

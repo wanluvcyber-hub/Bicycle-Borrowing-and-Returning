@@ -252,7 +252,7 @@ class ErrorNotice extends StatelessWidget {
   }
 }
 
-/// ฉากมืดทับพรีวิวกล้อง + กรอบสแกน 250x250 มุมโค้ง (ใช้ทั้งหน้าสแกนนิสิตและป้อมยาม)
+/// ฉากมืดทับพรีวิวกล้อง + กรอบสแกน 250x250 มุมโค้ง (ใช้ทั้งหน้าสแกนนิสิตและป้อมรปภ.)
 class ScanOverlay extends StatelessWidget {
   const ScanOverlay({super.key, this.accent});
 

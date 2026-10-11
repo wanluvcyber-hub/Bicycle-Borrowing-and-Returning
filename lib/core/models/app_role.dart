@@ -1,7 +1,7 @@
 /// บทบาทของผู้ใช้ในแอป: เจ้าหน้าที่ดูจาก `staff.role` ส่วนนิสิตคือคนที่ผูกบัญชีหอในได้
 enum AppRole {
   student('นิสิต'),
-  guard('ป้อมยาม'),
+  guard('ป้อมรปภ.'),
   admin('ผู้ดูแลระบบ');
 
   const AppRole(this.labelTh);

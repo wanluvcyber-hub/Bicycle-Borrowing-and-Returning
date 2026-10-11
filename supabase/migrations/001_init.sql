@@ -20,7 +20,7 @@ create table if not exists public.students (
   full_name    text        not null,
   building     text,                                    -- อาคาร
   room         text,                                    -- ห้อง
-  phone        text,
+  phone        text        not null check (length(btrim(phone)) > 0),
   email        text,                                    -- อีเมลมหาลัย ใช้จับคู่ตอนล็อกอินครั้งแรก
   semester     text        not null,                    -- ภาคเรียนที่มีสิทธิ์ เช่น '1/2569'
   verified     boolean     not null default false,      -- ยืนยันหอในแล้วหรือยัง
@@ -32,7 +32,7 @@ create table if not exists public.students (
 create unique index if not exists students_email_key
   on public.students (lower(email));
 
--- เจ้าหน้าที่ (ป้อมยาม / ผู้ดูแลระบบ) · ไม่อยู่ใน Data Dictionary เดิม แต่จำเป็นสำหรับ received_by และสิทธิ์
+-- เจ้าหน้าที่ (ป้อมรปภ. / ผู้ดูแลระบบ) · ไม่อยู่ใน Data Dictionary เดิม แต่จำเป็นสำหรับ received_by และสิทธิ์
 create table if not exists public.staff (
   user_id   uuid primary key references auth.users (id) on delete cascade,
   full_name text not null,

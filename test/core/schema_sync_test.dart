@@ -32,6 +32,12 @@ void main() {
   final sql = _read('supabase/migrations/001_init.sql');
   final doc = _read('docs/database.md');
 
+  test('เบอร์มือถือเป็นข้อมูลบังคับทั้งใน schema และเอกสาร', () {
+    expect(sql, contains(RegExp(r'phone\s+text\s+not null')));
+    expect(sql, contains('check (length(btrim(phone)) > 0)'));
+    expect(doc, contains('| `phone` | text, **ไม่ว่าง** |'));
+  });
+
   group('รหัส error', () {
     test('SQL โยนรหัสเท่ากับที่เอกสารกำหนดพอดี', () {
       final inSql = RegExp(r"raise exception '([a-z_]+)'")
@@ -115,7 +121,7 @@ void main() {
         {for (final e in LoanCondition.values) e.dbValue: e.labelTh},
         {'normal': 'ปกติ', 'damaged': 'ชำรุด'},
       );
-      expect(AppRole.guard.labelTh, 'ป้อมยาม');
+      expect(AppRole.guard.labelTh, 'ป้อมรปภ.');
       expect(AppRole.admin.labelTh, 'ผู้ดูแลระบบ');
     });
 

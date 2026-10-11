@@ -146,7 +146,7 @@ class ConfirmBorrowPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'กรุณาคืนจักรยานที่ป้อมยามก่อนเวลา ${formatClock(due)} '
+                        'กรุณาคืนจักรยานที่ป้อมรปภ.ก่อนเวลา ${formatClock(due)} '
                         'เพื่อให้เจ้าหน้าที่ตรวจสภาพและรับคืน',
                         style: theme.textTheme.bodyMedium,
                       ),

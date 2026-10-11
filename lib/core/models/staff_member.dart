@@ -1,6 +1,6 @@
 import 'app_role.dart';
 
-/// แถวของตาราง `staff` (ป้อมยามหรือผู้ดูแลระบบ)
+/// แถวของตาราง `staff` (ป้อมรปภ.หรือผู้ดูแลระบบ)
 class StaffMember {
   const StaffMember({
     required this.userId,

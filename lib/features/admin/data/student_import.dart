@@ -2,8 +2,8 @@ import 'csv_parser.dart';
 
 /// รูปแบบ CSV นำเข้ารายชื่อหอใน (UTF-8, แถวแรกเป็นหัวคอลัมน์)
 /// ส่งเฉพาะคอลัมน์เหล่านี้ **ห้ามมี verified / late_count / auth_user_id** (database.md 4.7)
-const kStudentCsvRequired = ['student_id', 'full_name', 'semester'];
-const kStudentCsvOptional = ['building', 'room', 'phone', 'email'];
+const kStudentCsvRequired = ['student_id', 'full_name', 'phone', 'semester'];
+const kStudentCsvOptional = ['building', 'room', 'email'];
 const kStudentCsvColumns = [...kStudentCsvRequired, ...kStudentCsvOptional];
 
 const kStudentCsvExample =

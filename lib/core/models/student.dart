@@ -5,9 +5,9 @@ class Student {
   const Student({
     required this.studentId,
     required this.fullName,
+    required this.phone,
     this.building,
     this.room,
-    this.phone,
     this.email,
     required this.semester,
     this.verified = false,
@@ -19,7 +19,7 @@ class Student {
   final String fullName;
   final String? building;
   final String? room;
-  final String? phone;
+  final String phone;
   final String? email;
   final String semester;
   final bool verified;
@@ -31,7 +31,7 @@ class Student {
     fullName: json['full_name'] as String,
     building: json['building'] as String?,
     room: json['room'] as String?,
-    phone: json['phone'] as String?,
+    phone: json['phone'] as String,
     email: json['email'] as String?,
     semester: json['semester'] as String,
     verified: (json['verified'] as bool?) ?? false,

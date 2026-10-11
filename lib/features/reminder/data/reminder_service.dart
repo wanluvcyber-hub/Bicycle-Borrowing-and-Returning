@@ -44,7 +44,7 @@ class ReminderService {
       await _gateway.showOverdueStatus(
         id: kOverdueNotificationId,
         title: 'เกินเวลาคืนจักรยานแล้ว',
-        body: 'จักรยาน $bikeNo เลยกำหนด $clock น. กรุณาคืนที่ป้อมยามโดยเร็ว',
+        body: 'จักรยาน $bikeNo เลยกำหนด $clock น. กรุณาคืนที่ป้อมรปภ.โดยเร็ว',
       );
       return;
     }
@@ -68,7 +68,7 @@ class ReminderService {
             : 'เตือนคืนจักรยาน $bikeNo',
         body:
             'เหลืออีก ${slot.minutesBefore} นาที '
-            'กรุณาคืนจักรยาน $bikeNo ที่ป้อมยามก่อน $clock น.',
+            'กรุณาคืนจักรยาน $bikeNo ที่ป้อมรปภ.ก่อน $clock น.',
       );
     }
 
@@ -77,7 +77,7 @@ class ReminderService {
       at: dueAt,
       urgent: true,
       title: 'เกินเวลาคืนจักรยานแล้ว',
-      body: 'จักรยาน $bikeNo เลยกำหนด $clock น. กรุณาคืนที่ป้อมยามโดยเร็ว',
+      body: 'จักรยาน $bikeNo เลยกำหนด $clock น. กรุณาคืนที่ป้อมรปภ.โดยเร็ว',
     );
   }
 

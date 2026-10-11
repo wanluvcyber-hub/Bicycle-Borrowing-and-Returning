@@ -96,7 +96,7 @@ class GuardProvider extends ChangeNotifier {
 
   static String normalizeBikeNo(String input) => input.trim().toUpperCase();
 
-  /// ขั้นที่ 1: ป้อมยามต้องเห็นผู้ยืมก่อนเสมอ
+  /// ขั้นที่ 1: ป้อมรปภ.ต้องเห็นผู้ยืมก่อนเสมอ
   Future<void> lookupBike(String input) async {
     final bikeNo = normalizeBikeNo(input);
     _pendingLoan = null;

@@ -4,9 +4,9 @@ import '../models/app_role.dart';
 
 /// ธีมกลางตามดีไซน์ (stitch_custom_design_project/campus_mobility_material/DESIGN.md)
 ///
-/// - สีประจำบทบาท: นิสิต=เขียว · ป้อมยาม=ส้ม · ผู้ดูแล=เทาน้ำเงิน (พื้นหลัง/พื้นผิวใช้ชุดเดียวกันทุกบทบาท)
+/// - สีประจำบทบาท: นิสิต=เขียว · ป้อมรปภ.=ส้ม · ผู้ดูแล=เทาน้ำเงิน (พื้นหลัง/พื้นผิวใช้ชุดเดียวกันทุกบทบาท)
 /// - สีสถานะ (ว่าง/ถูกยืม/ชำรุด/เกินเวลา/คืนแล้ว) แยกจากสีบทบาท ใช้ผ่าน [AppStatusColors]
-///   ฝั่งป้อมยามห้ามใช้ส้มเป็นสีเตือน ให้ใช้ `overdue` (แดง) เท่านั้น
+///   ฝั่งป้อมรปภ.ห้ามใช้ส้มเป็นสีเตือน ให้ใช้ `overdue` (แดง) เท่านั้น
 /// - ฟอนต์: Prompt (หัวข้อ/ปุ่ม/ตัวเลข) + Noto Sans Thai (เนื้อหา) ฝังไว้ใน `assets/fonts/`
 class AppTheme {
   const AppTheme._();
@@ -65,7 +65,7 @@ class AppTheme {
         tertiaryContainer: const Color(0xFFFFDBCA),
         onTertiaryContainer: const Color(0xFF331200),
       ),
-      // ป้อมยาม/ผู้ดูแล: ปุ่มหลักเป็นสีบทบาทเต็มสี ตัวอักษรขาว
+      // ป้อมรปภ./ผู้ดูแล: ปุ่มหลักเป็นสีบทบาทเต็มสี ตัวอักษรขาว
       AppRole.guard || AppRole.admin => shared.copyWith(
         primary: seed,
         onPrimary: Colors.white,
@@ -119,7 +119,7 @@ class AppTheme {
     final scheme = schemeFor(role);
     final text = _textTheme(scheme.onSurface);
     final isGuard = role == AppRole.guard;
-    // ป้อมยามใช้ซ้ำทั้งวัน ปุ่มสูงอย่างน้อย 56dp ตามดีไซน์ ส่วนบทบาทอื่น 48dp
+    // ป้อมรปภ.ใช้ซ้ำทั้งวัน ปุ่มสูงอย่างน้อย 56dp ตามดีไซน์ ส่วนบทบาทอื่น 48dp
     final minHeight = isGuard ? 56.0 : 48.0;
     const stadium = StadiumBorder();
     final buttonText = text.labelLarge!.copyWith(fontWeight: FontWeight.w600);

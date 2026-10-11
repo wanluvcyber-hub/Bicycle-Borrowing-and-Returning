@@ -9,5 +9,5 @@ Process 4.0 แจ้งเตือนเวลาคืน + สถานะ�
 | `data/active_loan_source.dart` | เรียก `get_my_active_loan()` |
 | `state/reminder_provider.dart` | ถือรายการที่ยืมค้าง + `refresh` / `startLoan` / `clear` |
 | `presentation/loan_countdown_card.dart` | การ์ดนับถอยหลังเดินทุกวินาที |
-| `presentation/overdue_banner.dart` | แถบ "เกินเวลา" กลาง (นิสิต + ป้อมยาม) |
+| `presentation/overdue_banner.dart` | แถบ "เกินเวลา" กลาง (นิสิต + ป้อมรปภ.) |
 | `presentation/reminder_lifecycle.dart` | ซิงก์ตอนเปิดหน้า/กลับจากพื้นหลัง |

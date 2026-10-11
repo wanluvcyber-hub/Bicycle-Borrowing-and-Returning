@@ -4,7 +4,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/time_format.dart' show formatDuration;
 import '../data/reminder_schedule.dart';
 
-/// แถบ "เกินเวลา" กลาง ใช้ทั้งฝั่งนิสิตและป้อมยาม
+/// แถบ "เกินเวลา" กลาง ใช้ทั้งฝั่งนิสิตและป้อมรปภ.
 ///
 /// ```dart
 /// if (loan.isOverdueAt(DateTime.now()))

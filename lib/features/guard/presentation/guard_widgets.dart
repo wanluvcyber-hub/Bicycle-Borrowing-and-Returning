@@ -5,7 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/design_widgets.dart';
 import '../data/guard_models.dart';
 
-/// สีประจำบทบาทป้อมยาม = ส้ม (ตามแผน) · ห้ามใช้เป็นสีเตือน เตือน/เกินเวลาใช้แดง (AppStatusColors.overdue)
+/// สีประจำบทบาทป้อมรปภ. = ส้ม (ตามแผน) · ห้ามใช้เป็นสีเตือน เตือน/เกินเวลาใช้แดง (AppStatusColors.overdue)
 const guardColor = AppTheme.guardColor;
 
 final _timeFormat = DateFormat('dd/MM HH:mm');

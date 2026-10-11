@@ -145,7 +145,7 @@ class BorrowProvider extends ChangeNotifier {
     }
   }
 
-  /// เรียกเมื่อกลับมาที่หน้าหลัก หรือเมื่อรายการค้างหายไป (ป้อมยามรับคืนแล้ว)
+  /// เรียกเมื่อกลับมาที่หน้าหลัก หรือเมื่อรายการค้างหายไป (ป้อมรปภ.รับคืนแล้ว)
   Future<void> reloadActiveLoan() async {
     await _syncActiveLoan();
     _notify();

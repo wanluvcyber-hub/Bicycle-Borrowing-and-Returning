@@ -12,7 +12,7 @@ void main() {
       'full_name': 'นิสิตทดสอบ 01',
       'building': 'อาคาร 1',
       'room': '101',
-      'phone': null,
+      'phone': '0800000001',
       'email': 'test01@example.com',
       'semester': '1/2569',
       'verified': true,
@@ -20,7 +20,7 @@ void main() {
       'created_at': '2026-10-10T04:30:00+00:00',
     });
     expect(s.studentId, '66000001');
-    expect(s.phone, isNull);
+    expect(s.phone, '0800000001');
     expect(s.verified, isTrue);
     expect(s.lateCount, 2);
     expect(s.createdAt!.isUtc, isFalse);
@@ -30,7 +30,7 @@ void main() {
     final b = Bike.fromJson({
       'bike_no': 'B01',
       'qr_code': 'B01',
-      'station': 'ป้อมยามหอใน',
+      'station': 'ป้อมรปภ.หอใน',
       'status': 'broken',
       'note': 'เบรกเสีย',
     });
@@ -99,7 +99,7 @@ void main() {
   test('StaffMember / AppRole', () {
     final m = StaffMember.fromJson({
       'user_id': 'u1',
-      'full_name': 'ป้อมยามทดสอบ',
+      'full_name': 'ป้อมรปภ.ทดสอบ',
       'role': 'guard',
     });
     expect(m.role, AppRole.guard);
