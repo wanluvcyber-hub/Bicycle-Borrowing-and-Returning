@@ -28,7 +28,7 @@ void main() {
       final r = parseStudentCsv(
         '$header\n'
         '66000001,สมชาย ใจดี,อาคาร 1,101,0800000001,a@example.com,1/2569\n'
-        '66000002,สมหญิง,,,,,1/2569\n',
+        '66000002,สมหญิง,,,0800000002,,1/2569\n',
       );
       expect(r.fileErrors, isEmpty);
       expect(r.validRows, hasLength(2));

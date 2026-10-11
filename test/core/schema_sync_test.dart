@@ -23,13 +23,17 @@ const _expectedCodes = {
   'invalid_condition',
   'note_required',
   'no_active_loan',
+  'invalid_phone',
 };
 const _hiddenFromUser = {'invalid_condition'};
 
 String _read(String path) => File(path).readAsStringSync();
 
 void main() {
-  final sql = _read('supabase/migrations/001_init.sql');
+  final sql = [
+    _read('supabase/migrations/001_init.sql'),
+    _read('supabase/migrations/003_update_my_phone.sql'),
+  ].join('\n');
   final doc = _read('docs/database.md');
 
   test('เบอร์มือถือเป็นข้อมูลบังคับทั้งใน schema และเอกสาร', () {
@@ -137,6 +141,7 @@ void main() {
         'claim_student_profile',
         'borrow_bike',
         'get_my_active_loan',
+        'update_my_phone',
         'return_bike',
         'mark_overdue_loans',
         'is_staff',

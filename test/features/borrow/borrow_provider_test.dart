@@ -121,6 +121,52 @@ void main() {
     expect(provider.hasActiveLoan, isFalse);
   });
 
+  group('แก้เบอร์โทรของตัวเอง', () {
+    test('โหลดเบอร์โทรมากับข้อมูลนิสิต', () {
+      expect(provider.profile?.phone, '0800000001');
+    });
+
+    test('บันทึกสำเร็จ: ตัดขีด/ช่องว่างออก และหน้าจอได้เบอร์ใหม่ทันที', () async {
+      expect(await provider.updatePhone(' 081-234 5678 '), isNull);
+      expect(provider.profile?.phone, '0812345678');
+      expect(provider.profile?.studentId, '66000001');
+      expect(provider.savingPhone, isFalse);
+    });
+
+    test('เบอร์ผิดรูปแบบ -> invalid_phone และเบอร์เดิมไม่เปลี่ยน', () async {
+      for (final bad in ['', '12345', '1812345678', '08123456789', '08x2345678']) {
+        expect(
+          await provider.updatePhone(bad),
+          'เบอร์โทรไม่ถูกต้อง ต้องเป็นเบอร์มือถือ 10 หลัก ขึ้นต้นด้วย 0',
+          reason: bad,
+        );
+      }
+      expect(provider.profile?.phone, '0800000001');
+    });
+
+    test('ยังไม่ผูกสิทธิ์ -> not_verified', () async {
+      repo.profile = null;
+      expect(
+        await provider.updatePhone('0812345678'),
+        'บัญชีนี้ยังไม่ได้ยืนยันสิทธิ์หอใน',
+      );
+    });
+
+    test('เน็ตหลุด -> บอกให้ลองใหม่ และเบอร์เดิมไม่เปลี่ยน', () async {
+      repo.failNextPhoneUpdate = true;
+      expect(await provider.updatePhone('0812345678'), networkErrorMessage);
+      expect(provider.profile?.phone, '0800000001');
+    });
+
+    test('กดบันทึกรัวๆ ส่งคำขอเดียว', () async {
+      final first = provider.updatePhone('0812345678');
+      final second = provider.updatePhone('0899999999');
+      await Future.wait([first, second]);
+      expect(repo.phoneUpdateCalls, 1);
+      expect(provider.profile?.phone, '0812345678');
+    });
+  });
+
   test('คำขอที่ล้มเหลวด้วยเหตุผลของเซิร์ฟเวอร์ไม่ถูกมองเป็นเน็ตหลุด', () {
     expect(borrowErrorMessage(const BorrowException('after_hours')),
         'เลยเวลา 21.00 น. แล้ว ยืมไม่ได้');
