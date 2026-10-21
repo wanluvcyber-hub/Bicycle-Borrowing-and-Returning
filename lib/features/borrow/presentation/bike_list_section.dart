@@ -89,7 +89,7 @@ class _BikeListSectionState extends State<BikeListSection> {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      'ยืมได้ก่อนเวลา 21:00 น. · คืนที่ป้อมรปภ.',
+                      'ยืมได้ทุกเวลา · กำหนดคืน 21:00 น. · คืนที่ป้อมรปภ.',
                       style: theme.textTheme.bodyMedium,
                     ),
                   ),
