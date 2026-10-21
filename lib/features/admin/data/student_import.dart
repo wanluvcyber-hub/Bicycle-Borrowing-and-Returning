@@ -2,13 +2,13 @@ import 'csv_parser.dart';
 
 /// รูปแบบ CSV นำเข้ารายชื่อหอใน (UTF-8, แถวแรกเป็นหัวคอลัมน์)
 /// ส่งเฉพาะคอลัมน์เหล่านี้ **ห้ามมี verified / late_count / auth_user_id** (database.md 4.7)
-const kStudentCsvRequired = ['student_id', 'full_name', 'phone', 'semester'];
+const kStudentCsvRequired = ['student_id', 'full_name', 'semester'];
 const kStudentCsvOptional = ['building', 'room', 'email'];
 const kStudentCsvColumns = [...kStudentCsvRequired, ...kStudentCsvOptional];
 
 const kStudentCsvExample =
-    'student_id,full_name,building,room,phone,email,semester\n'
-    '66000001,สมชาย ใจดี,อาคาร 1,101,0800000001,somchai@example.com,1/2569';
+    'student_id,full_name,building,room,email,semester\n'
+    '66000001,สมชาย ใจดี,อาคาร 1,101,somchai@example.com,1/2569';
 
 final _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
 

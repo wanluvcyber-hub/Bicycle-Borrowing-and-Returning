@@ -29,7 +29,7 @@ abstract class GuardRepository {
   Stream<void> changes();
 }
 
-const _loanSelect = '*, students(full_name, building, room, phone)';
+const _loanSelect = '*, students(full_name, building, room)';
 
 class SupabaseGuardRepository implements GuardRepository {
   SupabaseGuardRepository(this._client);
@@ -148,9 +148,9 @@ class FakeGuardRepository implements GuardRepository {
         ),
     };
     _students = {
-      '66000001': ('สมชาย ใจดี', 'อาคาร A', '101', '0811111111'),
-      '66000002': ('สมหญิง รักเรียน', 'อาคาร B', '202', '0822222222'),
-      '66000003': ('มานะ ตั้งใจ', 'อาคาร A', '305', '0833333333'),
+      '66000001': ('สมชาย ใจดี', 'อาคาร A', '101'),
+      '66000002': ('สมหญิง รักเรียน', 'อาคาร B', '202'),
+      '66000003': ('มานะ ตั้งใจ', 'อาคาร A', '305'),
     };
     _addLoan('B01', '66000001', t.subtract(const Duration(hours: 3)),
         t.add(const Duration(hours: 2)));
@@ -165,7 +165,7 @@ class FakeGuardRepository implements GuardRepository {
   }
 
   late final Map<String, GuardBike> _bikes;
-  late final Map<String, (String, String, String, String)> _students;
+  late final Map<String, (String, String, String)> _students;
   final _loans = <GuardLoan>[];
   final _lateCounts = <String, int>{};
   final _changes = StreamController<void>.broadcast();
@@ -182,7 +182,6 @@ class FakeGuardRepository implements GuardRepository {
       studentName: s.$1,
       building: s.$2,
       room: s.$3,
-      phone: s.$4,
     );
     _loans.add(loan);
     final bike = _bikes[bikeNo]!;
@@ -235,7 +234,6 @@ class FakeGuardRepository implements GuardRepository {
       studentName: loan.studentName,
       building: loan.building,
       room: loan.room,
-      phone: loan.phone,
     );
     final damaged = condition == ReturnCondition.damaged;
     _bikes[bikeNo] = GuardBike(

@@ -16,10 +16,6 @@ abstract class BorrowRepository {
   /// ยืมด้วยค่าที่ได้จาก QR · โยน error รหัสตามหัวข้อ 5
   Future<MyLoan> borrowBike(String qrCode);
 
-  /// แก้เบอร์มือถือของตัวเอง · คืนเบอร์ที่บันทึกจริง (ตัดขีด/ช่องว่างแล้ว)
-  /// โยน `invalid_phone` ถ้าไม่ใช่เบอร์ 10 หลักขึ้นต้นด้วย 0
-  Future<String> updateMyPhone(String phone);
-
   /// รายการจักรยานทั้งหมดแบบสด (ส่งค่าแรกทันที แล้วส่งใหม่ทุกครั้งที่มีคนยืม/คืน)
   Stream<List<BorrowBike>> watchBikes();
 }
@@ -35,7 +31,7 @@ class SupabaseBorrowRepository implements BorrowRepository {
     if (userId == null) return null;
     final row = await _client
         .from('students')
-        .select('student_id, full_name, building, room, phone')
+        .select('student_id, full_name, building, room')
         .eq('auth_user_id', userId)
         .maybeSingle();
     return row == null ? null : StudentProfile.fromJson(row);
@@ -51,12 +47,6 @@ class SupabaseBorrowRepository implements BorrowRepository {
   Future<MyLoan> borrowBike(String qrCode) async {
     final res = await _client.rpc('borrow_bike', params: {'p_qr_code': qrCode});
     return MyLoan.fromJson(res as Map<String, dynamic>);
-  }
-
-  @override
-  Future<String> updateMyPhone(String phone) async {
-    final res = await _client.rpc('update_my_phone', params: {'p_phone': phone});
-    return res as String;
   }
 
   @override
@@ -76,7 +66,6 @@ class FakeBorrowRepository implements BorrowRepository {
       fullName: 'สมชาย ใจดี',
       building: 'อาคาร A',
       room: '101',
-      phone: '0800000001',
     ),
     this.afterHours = false,
     DateTime Function()? clock,
@@ -108,11 +97,6 @@ class FakeBorrowRepository implements BorrowRepository {
   bool failNextBorrowBeforeServer = false;
 
   int borrowCalls = 0;
-
-  /// จำลองเน็ตหลุดตอนบันทึกเบอร์โทร
-  bool failNextPhoneUpdate = false;
-
-  int phoneUpdateCalls = 0;
 
   final DateTime Function() _clock;
   final _bikes = <String, BorrowBike>{};
@@ -177,24 +161,6 @@ class FakeBorrowRepository implements BorrowRepository {
       throw const _FakeNetworkError();
     }
     return loan;
-  }
-
-  @override
-  Future<String> updateMyPhone(String phone) async {
-    phoneUpdateCalls++;
-    await Future<void>.delayed(const Duration(milliseconds: 50));
-    if (failNextPhoneUpdate) {
-      failNextPhoneUpdate = false;
-      throw const _FakeNetworkError();
-    }
-    final cleaned = phone.replaceAll(RegExp(r'[\s-]'), '');
-    if (!RegExp(r'^0[0-9]{9}$').hasMatch(cleaned)) {
-      throw const BorrowException('invalid_phone');
-    }
-    final current = profile;
-    if (current == null) throw const BorrowException('not_verified');
-    profile = current.withPhone(cleaned);
-    return cleaned;
   }
 
   @override

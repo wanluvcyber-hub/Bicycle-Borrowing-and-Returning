@@ -51,7 +51,6 @@ students (D1) 1 ───< loans (D3) >─── 1 bikes (D2) 1 ─── 1 bike
 | `student_id` | text, **PK** | รหัสนิสิต เช่น `66000001` |
 | `full_name` | text, ไม่ว่าง | ชื่อ-นามสกุล |
 | `building`, `room` | text | อาคาร, ห้อง |
-| `phone` | text, **ไม่ว่าง** | เบอร์มือถือของนิสิต ต้องมีค่า |
 | `email` | text | อีเมลมหาลัย (**อีเมลห้ามซ้ำ** ไม่สนตัวพิมพ์เล็ก-ใหญ่) |
 | `semester` | text, ไม่ว่าง | ภาคเรียนที่มีสิทธิ์ เช่น `1/2569` |
 | `verified` | boolean, default `false` | ยืนยันหอในแล้วหรือยัง (ตั้งเป็น true ตอนผูกบัญชี) นิสิตที่ `false` ยืมไม่ได้ |
@@ -112,7 +111,7 @@ from auth.users where email = 'อีเมลที่สร้างใน Aut
 
 | ตาราง | นิสิต | ป้อมรปภ. (`guard`) | ผู้ดูแล (`admin`) | ยังไม่ล็อกอิน |
 |---|---|---|---|---|
-| `students` | อ่านแถวตัวเองเท่านั้น (แก้ได้เฉพาะเบอร์มือถือ ผ่าน `update_my_phone`) | อ่านทั้งหมด | อ่าน + เพิ่ม/แก้/ลบ ทั้งหมด | ไม่ได้ |
+| `students` | อ่านแถวตัวเองเท่านั้น | อ่านทั้งหมด | อ่าน + เพิ่ม/แก้/ลบ ทั้งหมด | ไม่ได้ |
 | `staff` | ไม่เห็น | เห็นแถวตัวเอง | เห็นทั้งหมด (แก้ผ่าน SQL Editor) | ไม่ได้ |
 | `bikes` | อ่านทั้งหมด | อ่านทั้งหมด | อ่าน + เพิ่ม/แก้/ลบ | ไม่ได้ |
 | `bike_locks` | **ไม่เห็นเลย** (ได้ 0 แถว) | อ่านทั้งหมด | อ่าน + เพิ่ม/แก้/ลบ | ไม่ได้ |
@@ -205,7 +204,7 @@ final bikes = await supabase.from('bikes')
 
 // 6.0 รายการที่ยังค้างอยู่ พร้อมข้อมูลผู้ยืม (เฉพาะเจ้าหน้าที่ เพราะนิสิตเห็นแค่ของตัวเอง)
 final active = await supabase.from('loans')
-    .select('*, students(full_name, building, room, phone)')
+    .select('*, students(full_name, building, room)')
     .isFilter('returned_at', null);
 
 // 6.0 ค้นประวัติด้วยรหัสนิสิต
@@ -214,23 +213,13 @@ final history = await supabase.from('loans').select()
 
 // 7.0 แอดมินนำเข้ารายชื่อ: ส่งเฉพาะคอลัมน์เหล่านี้ (อย่าส่ง verified / late_count / auth_user_id
 // ไม่งั้นจะทับสถานะของคนที่ผูกบัญชีแล้ว)
-// ต้องมี student_id, full_name, phone และ semester ทุกแถว; building, room, email เป็นข้อมูลเสริม
+// ต้องมี student_id, full_name และ semester ทุกแถว; building, room, email เป็นข้อมูลเสริม
 await supabase.from('students').upsert(rows, onConflict: 'student_id');
 
 // 7.0 แอดมินปิดงานซ่อม
 await supabase.from('bikes').update({'status': 'available', 'note': null}).eq('bike_no', 'B01');
 ```
 > ตัวอย่างในหัวข้อนี้เขียนตามเอกสาร supabase_flutter แต่ **ยังไม่ได้ลองรันกับ Supabase จริง** ถ้ารันแล้วพังให้แก้ตัวอย่างในเอกสารนี้ด้วย
-
-### 4.8 `update_my_phone(p_phone text)` — นิสิตแก้เบอร์มือถือของตัวเอง
-แก้ `students.phone` ของแถวที่ผูกกับบัญชีที่ล็อกอินอยู่ (อยู่ใน `003_update_my_phone.sql`)
-- เรียกเมื่อ: นิสิตกดแก้เบอร์โทรที่หน้าหลักแล้วกดบันทึก
-- รับขีดและช่องว่างได้ (ตัดออกให้) แต่ต้องเหลือ **10 หลัก ขึ้นต้นด้วย 0**
-- คืน: เบอร์ที่บันทึกจริง (text) เช่น `"0812345678"`
-- error: `not_authenticated`, `invalid_phone`, `not_verified`
-```dart
-final saved = await supabase.rpc('update_my_phone', params: {'p_phone': '081-234-5678'});
-```
 
 ---
 
@@ -248,7 +237,6 @@ final saved = await supabase.rpc('update_my_phone', params: {'p_phone': '081-234
 | `bike_not_available` | `borrow_bike` | คันนี้ถูกยืมอยู่หรือชำรุด | จักรยานคันนี้ไม่ว่าง |
 | `no_lock_code` | `borrow_bike` | คันนี้ยังไม่มีแถวใน `bike_locks` | จักรยานคันนี้ยังไม่มีรหัสล็อก แจ้งผู้ดูแล |
 | `after_hours` | `borrow_bike` | (เลิกใช้ตั้งแต่ migration 004 ยืมได้ทุกเวลา) | เลยเวลา 21.00 น. แล้ว ยืมไม่ได้ |
-| `invalid_phone` | `update_my_phone` | เบอร์ไม่ใช่ 10 หลักขึ้นต้นด้วย 0 | เบอร์โทรไม่ถูกต้อง ต้องเป็นเบอร์มือถือ 10 หลัก ขึ้นต้นด้วย 0 |
 | `staff_only` | `return_bike` | ผู้เรียกไม่ใช่เจ้าหน้าที่ | ฟังก์ชันนี้สำหรับเจ้าหน้าที่เท่านั้น |
 | `invalid_condition` | `return_bike` | `p_condition` ไม่ใช่ `normal`/`damaged` | (บั๊กในแอป ไม่ควรเกิด) |
 | `note_required` | `return_bike` | ชำรุดแต่ไม่ใส่หมายเหตุ | ถ้าชำรุด ต้องใส่หมายเหตุ |
@@ -294,7 +282,7 @@ error อื่นๆ (เช่น `permission denied`, `violates ...`) แป�
 
 1. สร้างบัญชีที่ supabase.com แล้ว **New project** (ตั้งชื่อ เลือก region ใกล้ไทย เช่น Singapore, จดรหัสผ่านฐานข้อมูลไว้) โปรเจกต์เดียวสำหรับทั้งทีม
 2. เปิด **SQL Editor → New query** วางไฟล์ `supabase/migrations/001_init.sql` ทั้งไฟล์ แล้ว Run ต้องขึ้น *Success. No rows returned*
-3. New query ใหม่ วางไฟล์ `supabase/migrations/003_update_my_phone.sql` แล้ว Run (เพิ่มคอลัมน์ `phone` ถ้ายังไม่มี เติมเบอร์ทดสอบให้แถวที่เบอร์ว่าง บังคับห้ามว่าง และเพิ่มฟังก์ชัน `update_my_phone`) ไฟล์นี้รวมผลของ `002_require_student_phone.sql` แล้ว ไม่ต้องรัน 002 แยก
+3. New query ใหม่ วางไฟล์ `supabase/migrations/006_drop_student_phone.sql` แล้ว Run (ลบฟังก์ชัน `update_my_phone` และคอลัมน์ `students.phone` ระบบนี้ไม่เก็บเบอร์โทรนิสิต)
 4. New query ใหม่ วาง `supabase/seed.sql` แล้ว Run (จักรยาน B01–B10, นิสิตทดสอบ 20 คน)
 5. **Authentication → Users → Add user → Create new user** สร้างบัญชีทดสอบ (ติ๊ก **Auto Confirm User**) :
 
@@ -326,7 +314,7 @@ select (select count(*) from public.bikes)      as bikes,      -- 10
 
 - **ห้ามแก้ตาราง/ฟังก์ชัน/policy ผ่านหน้า Dashboard** ทุกการเปลี่ยนแปลงต้องอยู่เป็นไฟล์ในโฟลเดอร์ `supabase/migrations/`
 - เมื่อ `001_init.sql` ถูกรันกับ Supabase ของทีมแล้ว **อย่าแก้ไฟล์นั้นอีก** ให้สร้างไฟล์ใหม่ต่อท้าย เช่น `003_add_problem_reports.sql` เขียนให้รันซ้ำได้ (`if not exists`, `create or replace`)
-- `002_require_student_phone.sql` บังคับ `students.phone` ให้มีค่า แต่จะหยุดถ้าข้อมูลเดิมมีเบอร์ว่าง ให้รัน `003_update_my_phone.sql` แทน ซึ่งเติมเบอร์ทดสอบ (`0800000001`, ...) ให้แถวที่เบอร์ว่างก่อนบังคับ และไม่แตะแถวที่มีเบอร์อยู่แล้ว
+- `002_require_student_phone.sql` และ `003_update_my_phone.sql` เป็นประวัติของเบอร์โทรนิสิตที่เลิกใช้แล้ว `006_drop_student_phone.sql` ลบทิ้งทั้งหมด (รันเลยโดยไม่ต้องรัน 002/003 ก่อนก็ได้)
 - ขั้นตอน: เปิด PR ที่มีไฟล์ SQL ใหม่ **และแก้เอกสารนี้ใน PR เดียวกัน** → แจ้งในกลุ่ม → คนที่ 1 รันไฟล์ใน SQL Editor → ทุกคน pull
 - ถ้าเปลี่ยนชื่อฟิลด์/รหัส error/ผลลัพธ์ฟังก์ชัน ต้องแจ้งทุกคนก่อน เพราะโค้ดของทุกคนพึ่งชื่อพวกนี้
 - คนที่ 1 เป็นคนเดียวที่รัน SQL กับ Supabase ของทีม คนอื่นอยากลองแก้ให้สร้าง Supabase project ของตัวเองสำหรับทดลอง แล้วค่อยส่ง PR

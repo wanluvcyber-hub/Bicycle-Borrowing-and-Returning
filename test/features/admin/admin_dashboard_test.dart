@@ -32,7 +32,6 @@ void main() {
       'full_name': 'นิสิตทดสอบ',
       'building': 'อาคาร A',
       'room': '305',
-      'phone': '0800000000',
     },
   };
 

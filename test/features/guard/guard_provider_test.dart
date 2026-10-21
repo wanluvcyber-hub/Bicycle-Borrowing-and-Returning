@@ -125,7 +125,6 @@ void main() {
         'full_name': 'สมชาย ใจดี',
         'building': 'A',
         'room': '101',
-        'phone': '081',
       },
     });
     expect(loan.isActive, isTrue);

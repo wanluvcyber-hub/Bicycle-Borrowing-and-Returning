@@ -78,7 +78,7 @@
 | งานซ่อม | รายการคันที่ `broken` พร้อมหมายเหตุ → ปุ่ม "ซ่อมเสร็จ" ตั้งกลับเป็น `available` และล้าง `note` | `bikes` |
 
 **ข้อควรระวัง**
-- นำเข้า CSV: ต้องมี `student_id`, `full_name`, `phone`, `semester` และส่งเฉพาะคอลัมน์ `student_id, full_name, building, room, phone, email, semester` **ห้ามส่ง `verified`, `late_count`, `auth_user_id`** ไม่งั้นจะทับสถานะของนิสิตที่ผูกบัญชีไปแล้ว (database.md 4.7)
+- นำเข้า CSV: ต้องมี `student_id`, `full_name`, `semester` และส่งเฉพาะคอลัมน์ `student_id, full_name, building, room, email, semester` **ห้ามส่ง `verified`, `late_count`, `auth_user_id`** ไม่งั้นจะทับสถานะของนิสิตที่ผูกบัญชีไปแล้ว (database.md 4.7)
 - ตกลงรูปแบบ CSV กับกองหอพัก (หัวคอลัมน์, encoding UTF-8) แล้วเขียนไว้ในหน้านำเข้า
 - การเปลี่ยนเทอม: ทำตามสูตรใน database.md หัวข้อ 10 อย่าลบนิสิตเก่าที่มีประวัติการยืม
 - (ทางเลือก) หน้าพิมพ์ QR ของแต่ละคัน — ค่าใน QR คือ `qr_code` ของคันนั้น (คือเลขคัน) ถ้าจะใช้ package สร้าง QR ให้เพิ่มผ่าน PR แยกและแจ้งทีม

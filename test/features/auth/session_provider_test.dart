@@ -56,7 +56,6 @@ class FakeAuthRepository implements AuthRepository {
     return const Student(
       studentId: '66000001',
       fullName: 'นิสิต',
-      phone: '0800000001',
       semester: '1/2569',
       verified: true,
     );

@@ -10,7 +10,6 @@ import 'active_loan_card.dart';
 import 'bike_list_section.dart';
 import 'borrow_widgets.dart';
 import 'confirm_borrow_page.dart';
-import 'edit_phone_dialog.dart';
 import 'scan_page.dart';
 
 /// หน้าหลักนิสิต · คนที่ 1 เรียกใช้จาก router เมื่อล็อกอินเป็นนิสิตที่ผูกสิทธิ์แล้ว
@@ -44,23 +43,6 @@ class _HomeScaffold extends StatelessWidget {
   const _HomeScaffold({this.onSignOut});
 
   final Future<void> Function()? onSignOut;
-
-  Future<void> _editPhone(BuildContext context) async {
-    final provider = context.read<BorrowProvider>();
-    final messenger = ScaffoldMessenger.of(context);
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (_) => EditPhoneDialog(
-        initialPhone: provider.profile?.phone,
-        onSave: provider.updatePhone,
-      ),
-    );
-    if (saved == true) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('บันทึกเบอร์โทรแล้ว')),
-      );
-    }
-  }
 
   Future<void> _scan(BuildContext context) async {
     final provider = context.read<BorrowProvider>();
@@ -158,22 +140,9 @@ class _HomeScaffold extends StatelessWidget {
                             'รหัส ${profile.studentId}',
                             style: theme.textTheme.bodyMedium,
                           ),
-                        if (profile != null)
-                          Text(
-                            (profile.phone ?? '').isEmpty
-                                ? 'ยังไม่มีเบอร์โทร'
-                                : 'โทร ${formatPhone(profile.phone!)}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
                       ],
                     ),
                   ),
-                  if (profile != null)
-                    IconButton(
-                      tooltip: 'แก้ไขเบอร์โทร',
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => _editPhone(context),
-                    ),
                 ],
               ),
             ),

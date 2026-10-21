@@ -145,28 +145,6 @@ class BorrowProvider extends ChangeNotifier {
     }
   }
 
-  // ---------- เบอร์โทร ----------
-  bool _savingPhone = false;
-
-  bool get savingPhone => _savingPhone;
-
-  /// นิสิตแก้เบอร์มือถือของตัวเอง · คืนข้อความ error ภาษาไทย หรือ null ถ้าสำเร็จ
-  Future<String?> updatePhone(String input) async {
-    if (_savingPhone) return unknownErrorMessage;
-    _savingPhone = true;
-    _notify();
-    try {
-      final saved = await _repo.updateMyPhone(input);
-      _profile = _profile?.withPhone(saved);
-      return null;
-    } catch (e) {
-      return borrowErrorMessage(e);
-    } finally {
-      _savingPhone = false;
-      _notify();
-    }
-  }
-
   /// เรียกเมื่อกลับมาที่หน้าหลัก หรือเมื่อรายการค้างหายไป (ป้อมรปภ.รับคืนแล้ว)
   Future<void> reloadActiveLoan() async {
     await _syncActiveLoan();

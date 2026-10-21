@@ -16,13 +16,12 @@ from generate_series(1, 10) as i
 on conflict (bike_no) do nothing;
 
 -- นิสิตทดสอบ 20 คน: รหัส 66000001..66000020 · อีเมล test01@example.com .. test20@example.com
-insert into public.students (student_id, full_name, building, room, phone, email, semester, verified)
+insert into public.students (student_id, full_name, building, room, email, semester, verified)
 select
   '6600' || lpad(i::text, 4, '0'),
   'นิสิตทดสอบ ' || lpad(i::text, 2, '0'),
   'อาคาร ' || ((i - 1) % 5 + 1),
   (100 + i)::text,
-  '080000' || lpad(i::text, 4, '0'),
   'test' || lpad(i::text, 2, '0') || '@example.com',
   '1/2569',
   false

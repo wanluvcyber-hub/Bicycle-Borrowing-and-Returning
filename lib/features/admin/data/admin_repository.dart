@@ -125,7 +125,7 @@ class AdminRepository {
         .from('loans')
         .select(
           'loan_id, bike_no, student_id, borrowed_at, due_at, returned_at, is_late, '
-          'students(full_name, building, room, phone)',
+          'students(full_name, building, room)',
         )
         .or(
           'returned_at.is.null,returned_at.gte.$start,borrowed_at.gte.$start',

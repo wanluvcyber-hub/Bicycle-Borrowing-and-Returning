@@ -42,7 +42,6 @@ class StudentProfile {
     required this.fullName,
     this.building,
     this.room,
-    this.phone,
   });
 
   factory StudentProfile.fromJson(Map<String, dynamic> json) => StudentProfile(
@@ -50,22 +49,12 @@ class StudentProfile {
         fullName: json['full_name'] as String,
         building: json['building'] as String?,
         room: json['room'] as String?,
-        phone: json['phone'] as String?,
-      );
-
-  StudentProfile withPhone(String phone) => StudentProfile(
-        studentId: studentId,
-        fullName: fullName,
-        building: building,
-        room: room,
-        phone: phone,
       );
 
   final String studentId;
   final String fullName;
   final String? building;
   final String? room;
-  final String? phone;
 }
 
 /// รายการที่ตัวเองยืมค้าง (ผลของ borrow_bike / get_my_active_loan)

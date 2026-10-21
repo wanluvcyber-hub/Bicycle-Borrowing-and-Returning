@@ -17,7 +17,6 @@ const Map<String, String> kDbErrorMessages = {
   'staff_only': 'ฟังก์ชันนี้สำหรับเจ้าหน้าที่เท่านั้น',
   'note_required': 'ถ้าชำรุด ต้องใส่หมายเหตุ',
   'no_active_loan': 'ไม่พบรายการยืมค้างของคันนี้',
-  'invalid_phone': 'เบอร์โทรไม่ถูกต้อง ต้องเป็นเบอร์มือถือ 10 หลัก ขึ้นต้นด้วย 0',
 };
 
 const _genericMessage = 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';

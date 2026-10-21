@@ -10,7 +10,6 @@ class OverdueLoan {
     this.studentName,
     this.building,
     this.room,
-    this.phone,
   });
 
   final int loanId;
@@ -20,7 +19,6 @@ class OverdueLoan {
   final String? studentName;
   final String? building;
   final String? room;
-  final String? phone;
 
   Duration lateBy(DateTime now) => now.difference(dueAt);
 
@@ -139,7 +137,6 @@ class AdminDashboard {
             studentName: st['full_name'] as String?,
             building: st['building'] as String?,
             room: st['room'] as String?,
-            phone: st['phone'] as String?,
           ),
         );
       }

@@ -23,7 +23,6 @@ const _expectedCodes = {
   'invalid_condition',
   'note_required',
   'no_active_loan',
-  'invalid_phone',
 };
 const _hiddenFromUser = {'invalid_condition'};
 
@@ -32,14 +31,15 @@ String _read(String path) => File(path).readAsStringSync();
 void main() {
   final sql = [
     _read('supabase/migrations/001_init.sql'),
-    _read('supabase/migrations/003_update_my_phone.sql'),
   ].join('\n');
   final doc = _read('docs/database.md');
 
-  test('เบอร์มือถือเป็นข้อมูลบังคับทั้งใน schema และเอกสาร', () {
-    expect(sql, contains(RegExp(r'phone\s+text\s+not null')));
-    expect(sql, contains('check (length(btrim(phone)) > 0)'));
-    expect(doc, contains('| `phone` | text, **ไม่ว่าง** |'));
+  test('ไม่เก็บเบอร์โทรนิสิต: โค้ด เอกสาร และ migration 006 ที่ลบคอลัมน์ตรงกัน', () {
+    final drop = _read('supabase/migrations/006_drop_student_phone.sql');
+    expect(drop, contains('drop column if exists phone'));
+    expect(drop, contains('drop function if exists public.update_my_phone'));
+    expect(doc, isNot(contains('update_my_phone(')));
+    expect(doc, isNot(contains('| `phone` |')));
   });
 
   group('รหัส error', () {
@@ -141,7 +141,6 @@ void main() {
         'claim_student_profile',
         'borrow_bike',
         'get_my_active_loan',
-        'update_my_phone',
         'return_bike',
         'mark_overdue_loans',
         'is_staff',

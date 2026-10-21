@@ -536,10 +536,7 @@ class _OverdueContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final status = context.status;
-    final detail = [
-      if (l.roomLabel.isNotEmpty) l.roomLabel,
-      if ((l.phone ?? '').isNotEmpty) 'โทร ${l.phone}',
-    ].join(' · ');
+    final detail = l.roomLabel;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

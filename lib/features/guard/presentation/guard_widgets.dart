@@ -109,8 +109,6 @@ class LoanDetails extends StatelessWidget {
         ),
         line(Icons.badge_outlined, 'รหัส ${loan.studentId}'),
         if (loan.roomLabel.isNotEmpty) line(Icons.apartment, loan.roomLabel),
-        if ((loan.phone ?? '').isNotEmpty)
-          line(Icons.phone_outlined, 'โทร ${loan.phone}'),
         line(
           Icons.schedule,
           'ยืม ${formatTime(loan.borrowedAt)} · กำหนดคืน ${formatTime(loan.dueAt)}',

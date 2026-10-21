@@ -50,7 +50,6 @@ class GuardLoan {
     this.studentName,
     this.building,
     this.room,
-    this.phone,
   });
 
   factory GuardLoan.fromJson(Map<String, dynamic> json) {
@@ -67,7 +66,6 @@ class GuardLoan {
       studentName: student?['full_name'] as String?,
       building: student?['building'] as String?,
       room: student?['room'] as String?,
-      phone: student?['phone'] as String?,
     );
   }
 
@@ -82,7 +80,6 @@ class GuardLoan {
   final String? studentName;
   final String? building;
   final String? room;
-  final String? phone;
 
   bool get isActive => returnedAt == null;
 
