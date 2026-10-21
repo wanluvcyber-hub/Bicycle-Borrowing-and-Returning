@@ -6,7 +6,7 @@
 
 -- จักรยาน 10 คัน: B01 ... B10 (qr_code = เลขคัน) รหัสล็อกทดสอบ 0111, 0222, ...
 insert into public.bikes (bike_no, qr_code, station)
-select 'B' || lpad(i::text, 2, '0'), 'B' || lpad(i::text, 2, '0'), 'ป้อมรปภ.หอใน'
+select 'B' || lpad(i::text, 2, '0'), 'B' || lpad(i::text, 2, '0'), 'ป้อมB2 หอพักนิสิต'
 from generate_series(1, 10) as i
 on conflict (bike_no) do nothing;
 
