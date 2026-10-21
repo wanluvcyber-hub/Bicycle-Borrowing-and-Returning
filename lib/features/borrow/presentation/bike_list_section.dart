@@ -34,6 +34,12 @@ class _BikeListSectionState extends State<BikeListSection> {
         ? bikes.where((b) => b.status == BikeAvailability.available).toList()
         : bikes;
     final ratio = bikes.isEmpty ? 0.0 : availableCount / bikes.length;
+    // จุดจอดแสดงที่เดียวบนการ์ดสรุป ไม่ซ้ำในทุกแถว (ถ้ามีหลายจุดจะรวมเป็นบรรทัดเดียว)
+    final stations = {
+      for (final b in bikes)
+        if (b.station != null && b.station!.trim().isNotEmpty)
+          b.station!.trim(),
+    }.join(', ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,6 +85,28 @@ class _BikeListSectionState extends State<BikeListSection> {
                 ),
               ),
               const SizedBox(height: 12),
+              if (stations.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.place_outlined,
+                      size: 18,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'จุดจอดจักรยานทั้งหมด: $stations',
+                        key: const Key('stationSummary'),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
               Row(
                 children: [
                   Icon(
@@ -89,7 +117,7 @@ class _BikeListSectionState extends State<BikeListSection> {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      'ยืมได้ก่อนเวลา 21:00 น. · คืนที่ป้อมรปภ.',
+                      'ยืมได้ทุกเวลา · กำหนดคืน 21:00 น. · คืนที่ป้อมรปภ.',
                       style: theme.textTheme.bodyMedium,
                     ),
                   ),
@@ -163,24 +191,6 @@ class _BikeTile extends StatelessWidget {
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.place_outlined,
-                        size: 16,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          bike.station ?? '-',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
